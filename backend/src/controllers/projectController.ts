@@ -1,8 +1,45 @@
 import { Response } from 'express';
 import { Project } from '../models/Project';
 import { Startup } from '../models/Startup';
+import { User } from '../models/User';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { uploadFile } from '../config/cloudinary';
+import { formatUserResponse } from '../utils/formatUser';
+
+export const getAssignees = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    if (req.user.role === 'admin') {
+      const users = await User.find().select('-password').sort({ name: 1 });
+      return res.status(200).json({
+        users: users.map((user) => formatUserResponse(user)),
+      });
+    }
+
+    const myStartups = await Startup.find({ founderId: req.user._id }).select('_id');
+    const myStartupIds = myStartups.map((startup) => startup._id);
+    const assignedUserIds = await Project.distinct('assignedUser', {
+      startupId: { $in: myStartupIds },
+    });
+
+    const uniqueIds = new Set<string>([req.user._id.toString()]);
+    assignedUserIds.forEach((id) => uniqueIds.add(id.toString()));
+
+    const users = await User.find({ _id: { $in: Array.from(uniqueIds) } })
+      .select('-password')
+      .sort({ name: 1 });
+
+    return res.status(200).json({
+      users: users.map((user) => formatUserResponse(user)),
+    });
+  } catch (error) {
+    console.error('Get Assignees Error:', error);
+    return res.status(500).json({ message: 'Server error retrieving assignees' });
+  }
+};
 
 export const getProjects = async (req: AuthRequest, res: Response) => {
   try {

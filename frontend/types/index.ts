@@ -4,6 +4,7 @@ export interface User {
   email: string;
   role: 'admin' | 'founder';
   profileImage: string;
+  createdAt?: string;
 }
 
 export interface Startup {

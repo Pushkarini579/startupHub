@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import multer from 'multer';
 import { connectDB } from './config/db';
 
 // Routes
@@ -24,8 +25,13 @@ const PORT = process.env.PORT || 5000;
 connectDB();
 
 // CORS Configuration
+const defaultOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
+const configuredOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map((origin) => origin.trim()).filter(Boolean)
+  : defaultOrigins;
+
 const corsOptions = {
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: configuredOrigins,
   credentials: true,
   optionsSuccessStatus: 200,
 };
@@ -55,8 +61,24 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 // 404 Route handler
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req: Request, res: Response) => {
   res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` });
+});
+
+// Multer / upload error handler
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ message: 'File too large. Maximum upload size is 10MB.' });
+    }
+    return res.status(400).json({ message: err.message });
+  }
+
+  if (err?.message?.includes('Invalid file type')) {
+    return res.status(400).json({ message: err.message });
+  }
+
+  next(err);
 });
 
 // Global Error Handler

@@ -28,6 +28,14 @@ interface ChartsProps {
 // Sleek aesthetic colors for light/dark themes
 const GRADIENT_COLORS = ['#6366f1', '#a855f7', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899'];
 
+function ChartEmptyState({ message }: { message: string }) {
+  return (
+    <div className="h-64 w-full flex items-center justify-center rounded-lg border border-dashed border-border bg-muted/10">
+      <p className="text-xs text-muted-foreground font-medium">{message}</p>
+    </div>
+  );
+}
+
 export default function DashboardCharts({
   industryStats,
   stageStats,
@@ -68,6 +76,7 @@ export default function DashboardCharts({
           <p className="text-[11px] text-muted-foreground">Monthly incubator registrations</p>
         </div>
         <div className="h-64 w-full">
+          {growthData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={growthData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <XAxis dataKey="name" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
@@ -79,6 +88,9 @@ export default function DashboardCharts({
               <Line type="monotone" dataKey="startups" stroke="#6366f1" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
             </LineChart>
           </ResponsiveContainer>
+          ) : (
+            <ChartEmptyState message="No startup registration data yet" />
+          )}
         </div>
       </div>
 
@@ -89,6 +101,7 @@ export default function DashboardCharts({
           <p className="text-[11px] text-muted-foreground">Aggregated project metrics</p>
         </div>
         <div className="h-64 w-full">
+          {projectActivityData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={projectActivityData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <XAxis dataKey="name" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
@@ -100,6 +113,9 @@ export default function DashboardCharts({
               <Bar dataKey="projects" fill="#a855f7" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
+          ) : (
+            <ChartEmptyState message="No project activity data yet" />
+          )}
         </div>
       </div>
 
@@ -110,6 +126,8 @@ export default function DashboardCharts({
           <p className="text-[11px] text-muted-foreground">Portfolio breakdown by technology focus</p>
         </div>
         <div className="h-64 w-full flex flex-col items-center justify-center">
+          {industryStats.length > 0 ? (
+          <>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -141,6 +159,10 @@ export default function DashboardCharts({
               </div>
             ))}
           </div>
+          </>
+          ) : (
+            <ChartEmptyState message="No industry distribution data yet" />
+          )}
         </div>
       </div>
 
@@ -151,6 +173,8 @@ export default function DashboardCharts({
           <p className="text-[11px] text-muted-foreground">Incubator portfolio capitalization stages</p>
         </div>
         <div className="h-64 w-full flex flex-col items-center justify-center">
+          {stageStats.length > 0 ? (
+          <>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -182,6 +206,35 @@ export default function DashboardCharts({
               </div>
             ))}
           </div>
+          </>
+          ) : (
+            <ChartEmptyState message="No funding stage data yet" />
+          )}
+        </div>
+      </div>
+
+      {/* Chart 5: Project Status Distribution */}
+      <div className="p-5 border bg-card border-border rounded-lg shadow-sm md:col-span-2">
+        <div className="mb-4">
+          <h3 className="font-semibold text-sm text-foreground">Project Status Breakdown</h3>
+          <p className="text-[11px] text-muted-foreground">Tasks grouped by workflow status</p>
+        </div>
+        <div className="h-64 w-full">
+          {projectStatusStats.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={projectStatusStats} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <XAxis dataKey="name" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{ background: '#09090b', border: '1px solid #27272a', borderRadius: '8px', fontSize: '11px', color: '#fff' }}
+                  labelStyle={{ fontWeight: '600' }}
+                />
+                <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <ChartEmptyState message="No project status data yet" />
+          )}
         </div>
       </div>
     </div>

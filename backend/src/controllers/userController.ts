@@ -3,8 +3,10 @@ import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
 import { Startup } from '../models/Startup';
 import { Project } from '../models/Project';
+import { Mentor } from '../models/Mentor';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { uploadFile } from '../config/cloudinary';
+import { formatUserResponse } from '../utils/formatUser';
 
 export const getUsers = async (req: AuthRequest, res: Response) => {
   try {
@@ -36,7 +38,7 @@ export const getUsers = async (req: AuthRequest, res: Response) => {
     const total = await User.countDocuments(query);
 
     return res.status(200).json({
-      users,
+      users: users.map((user) => formatUserResponse(user)),
       pagination: {
         page,
         limit,
@@ -86,13 +88,7 @@ export const createUser = async (req: AuthRequest, res: Response) => {
 
     return res.status(201).json({
       message: 'User created successfully',
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        profileImage: user.profileImage,
-      },
+      user: formatUserResponse(user),
     });
   } catch (error) {
     console.error('Create User Error:', error);
@@ -140,13 +136,7 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
 
     return res.status(200).json({
       message: 'User updated successfully',
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        profileImage: user.profileImage,
-      },
+      user: formatUserResponse(user),
     });
   } catch (error) {
     console.error('Update User Error:', error);
@@ -156,6 +146,14 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
 
 export const deleteUser = async (req: AuthRequest, res: Response) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    if (req.params.id === req.user._id.toString()) {
+      return res.status(400).json({ message: 'You cannot delete your own account' });
+    }
+
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -169,9 +167,15 @@ export const deleteUser = async (req: AuthRequest, res: Response) => {
       // Delete projects associated with these startups
       await Project.deleteMany({ startupId: { $in: startupIds } });
 
+      // Delete mentors associated with these startups
+      await Mentor.deleteMany({ startupAssigned: { $in: startupIds } });
+
       // Delete startups
       await Startup.deleteMany({ founderId: user._id });
     }
+
+    // Also delete any project where this user was the direct assignee (if they weren't the founder)
+    await Project.deleteMany({ assignedUser: user._id });
 
     await User.deleteOne({ _id: req.params.id });
 

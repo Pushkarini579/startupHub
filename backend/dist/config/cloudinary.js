@@ -62,7 +62,6 @@ const saveLocally = async (fileBuffer, fileName) => {
     const cleanFileName = `${Date.now()}-${fileName.replace(/[^a-zA-Z0-9_.-]/g, '_')}`;
     const filePath = path_1.default.join(uploadsDir, cleanFileName);
     fs_1.default.writeFileSync(filePath, fileBuffer);
-    const port = process.env.PORT || '5000';
-    // Return the path that the backend serves
-    return `http://localhost:${port}/uploads/${cleanFileName}`;
+    const backendUrl = (process.env.BACKEND_URL || `http://localhost:${process.env.PORT || '5000'}`).replace(/\/$/, '');
+    return `${backendUrl}/uploads/${cleanFileName}`;
 };

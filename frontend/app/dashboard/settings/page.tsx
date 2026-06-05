@@ -16,7 +16,7 @@ import {
   Loader2,
   Sparkles,
 } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn, resolveMediaUrl, DEFAULT_AVATAR } from '../../../lib/utils';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -31,7 +31,9 @@ export default function SettingsPage() {
   const { addToast } = useToast();
 
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(user?.profileImage || null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(
+    user?.profileImage ? resolveMediaUrl(user.profileImage) : null
+  );
   const [submitting, setSubmitting] = useState(false);
 
   const {
@@ -68,7 +70,9 @@ export default function SettingsPage() {
         formData.append('profileImage', selectedPhoto);
       }
 
-      await updateUserProfile(formData);
+      const updatedUser = await updateUserProfile(formData);
+      setPhotoPreview(updatedUser.profileImage ? resolveMediaUrl(updatedUser.profileImage) : null);
+      setSelectedPhoto(null);
       addToast('success', 'Profile Saved', 'Your account settings have been updated.');
     } catch (err: any) {
       addToast('error', 'Update Failed', err.message);
@@ -103,11 +107,14 @@ export default function SettingsPage() {
             {/* Avatar upload */}
             <div className="flex items-center gap-4 p-4 border border-border/50 bg-muted/10 rounded-xl">
               <div className="relative group cursor-pointer w-16 h-16 rounded-xl border border-border bg-muted overflow-hidden flex items-center justify-center shrink-0">
-                {photoPreview ? (
-                  <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
-                ) : (
-                  <UserIcon className="w-6 h-6 text-muted-foreground" />
-                )}
+                <img
+                  src={photoPreview || DEFAULT_AVATAR}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = DEFAULT_AVATAR;
+                  }}
+                />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                   <Upload className="w-4 h-4 text-white" />
                 </div>

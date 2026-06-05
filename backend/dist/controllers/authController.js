@@ -8,14 +8,16 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const User_1 = require("../models/User");
 const cloudinary_1 = require("../config/cloudinary");
+const jwtSecret_1 = require("../utils/jwtSecret");
+const formatUser_1 = require("../utils/formatUser");
 const generateToken = (id) => {
-    return jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET || 'startuphub_super_secret_jwt_key_2026', {
+    return jsonwebtoken_1.default.sign({ id }, (0, jwtSecret_1.getJwtSecret)(), {
         expiresIn: '30d',
     });
 };
 const register = async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password } = req.body;
         if (!name || !email || !password) {
             return res.status(400).json({ message: 'Please provide all required fields' });
         }
@@ -34,19 +36,13 @@ const register = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role: role || 'founder',
+            role: 'founder',
             profileImage: profileImageUrl,
         });
         const token = generateToken(user._id.toString());
         return res.status(201).json({
             token,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                profileImage: user.profileImage,
-            },
+            user: (0, formatUser_1.formatUserResponse)(user),
         });
     }
     catch (error) {
@@ -72,13 +68,7 @@ const login = async (req, res) => {
         const token = generateToken(user._id.toString());
         return res.status(200).json({
             token,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                profileImage: user.profileImage,
-            },
+            user: (0, formatUser_1.formatUserResponse)(user),
         });
     }
     catch (error) {
@@ -93,13 +83,7 @@ const getMe = async (req, res) => {
             return res.status(401).json({ message: 'Not authenticated' });
         }
         return res.status(200).json({
-            user: {
-                id: req.user._id,
-                name: req.user.name,
-                email: req.user.email,
-                role: req.user.role,
-                profileImage: req.user.profileImage,
-            },
+            user: (0, formatUser_1.formatUserResponse)(req.user),
         });
     }
     catch (error) {
@@ -137,13 +121,7 @@ const updateProfile = async (req, res) => {
         await user.save();
         return res.status(200).json({
             message: 'Profile updated successfully',
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                profileImage: user.profileImage,
-            },
+            user: (0, formatUser_1.formatUserResponse)(user),
         });
     }
     catch (error) {

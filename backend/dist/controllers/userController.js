@@ -9,6 +9,7 @@ const User_1 = require("../models/User");
 const Startup_1 = require("../models/Startup");
 const Project_1 = require("../models/Project");
 const cloudinary_1 = require("../config/cloudinary");
+const formatUser_1 = require("../utils/formatUser");
 const getUsers = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -32,7 +33,7 @@ const getUsers = async (req, res) => {
             .limit(limit);
         const total = await User_1.User.countDocuments(query);
         return res.status(200).json({
-            users,
+            users: users.map((user) => (0, formatUser_1.formatUserResponse)(user)),
             pagination: {
                 page,
                 limit,
@@ -72,13 +73,7 @@ const createUser = async (req, res) => {
         });
         return res.status(201).json({
             message: 'User created successfully',
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                profileImage: user.profileImage,
-            },
+            user: (0, formatUser_1.formatUserResponse)(user),
         });
     }
     catch (error) {
@@ -116,13 +111,7 @@ const updateUser = async (req, res) => {
         await user.save();
         return res.status(200).json({
             message: 'User updated successfully',
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                profileImage: user.profileImage,
-            },
+            user: (0, formatUser_1.formatUserResponse)(user),
         });
     }
     catch (error) {
@@ -133,6 +122,12 @@ const updateUser = async (req, res) => {
 exports.updateUser = updateUser;
 const deleteUser = async (req, res) => {
     try {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+        if (req.params.id === req.user._id.toString()) {
+            return res.status(400).json({ message: 'You cannot delete your own account' });
+        }
         const user = await User_1.User.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });

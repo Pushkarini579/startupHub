@@ -15,7 +15,7 @@ import {
   X,
   Sparkles,
 } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, resolveMediaUrl, DEFAULT_AVATAR } from '../lib/utils';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -89,9 +89,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="p-4 border-b border-border bg-zinc-950/20">
           <div className="flex items-center gap-2.5">
             <img
-              src={user?.profileImage || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100'}
+              src={user?.profileImage ? resolveMediaUrl(user.profileImage) : DEFAULT_AVATAR}
               alt="Avatar"
               className="w-8 h-8 rounded border border-border object-cover bg-muted"
+              onError={(e) => { e.currentTarget.src = DEFAULT_AVATAR; }}
             />
             <div className="flex-1 overflow-hidden">
               <h4 className="font-medium text-xs truncate text-foreground">{user?.name || 'Loading founder...'}</h4>

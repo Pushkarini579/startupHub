@@ -30,6 +30,8 @@ const userSchema = new mongoose_1.Schema({
     },
 }, {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
 });
 exports.User = (0, mongoose_1.model)('User', userSchema);
 exports.default = exports.User;

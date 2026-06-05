@@ -8,6 +8,7 @@ import startupService, { GetStartupsResponse } from '../../../services/startupSe
 import { Startup } from '../../../types';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../hooks/useToast';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import {
   Building2,
   Search,
@@ -23,7 +24,7 @@ import {
   Calendar,
   AlertCircle,
 } from 'lucide-react';
-import { formatDate, cn } from '../../../lib/utils';
+import { formatDate, cn, resolveMediaUrl, DEFAULT_LOGO } from '../../../lib/utils';
 
 const startupSchema = z.object({
   startupName: z.string().min(2, 'Startup name must be at least 2 characters'),
@@ -31,6 +32,7 @@ const startupSchema = z.object({
   description: z.string().min(10, 'Description must be at least 10 characters'),
   fundingStage: z.enum(['Ideation', 'Pre-Seed', 'Seed', 'Series A', 'Series B', 'Series C', 'Bootstrapped']),
   website: z.string().url('Must be a valid URL starting with http:// or https://').or(z.literal('')),
+  status: z.enum(['Pending', 'Approved', 'Rejected']).optional(),
 });
 
 type StartupSchema = z.infer<typeof startupSchema>;
@@ -42,7 +44,8 @@ export default function StartupsPage() {
   const [data, setData] = useState<GetStartupsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const debouncedSearch = useDebouncedValue(searchInput, 300);
   const [industry, setIndustry] = useState('');
   const [fundingStage, setFundingStage] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -68,7 +71,7 @@ export default function StartupsPage() {
       const res = await startupService.getStartups({
         page,
         limit: 10,
-        search,
+        search: debouncedSearch,
         industry,
         fundingStage,
         status: statusFilter,
@@ -84,7 +87,7 @@ export default function StartupsPage() {
 
   useEffect(() => {
     fetchStartups();
-  }, [page, search, industry, fundingStage, statusFilter, scope]);
+  }, [page, debouncedSearch, industry, fundingStage, statusFilter, scope]);
 
   const {
     register,
@@ -100,6 +103,7 @@ export default function StartupsPage() {
       description: '',
       fundingStage: 'Ideation',
       website: '',
+      status: 'Pending',
     },
   });
 
@@ -110,6 +114,7 @@ export default function StartupsPage() {
       description: '',
       fundingStage: 'Ideation',
       website: '',
+      status: user?.role === 'admin' ? 'Approved' : 'Pending',
     });
     setSelectedLogo(null);
     setLogoPreview(null);
@@ -124,9 +129,10 @@ export default function StartupsPage() {
       description: startup.description,
       fundingStage: startup.fundingStage,
       website: startup.website,
+      status: startup.status,
     });
     setSelectedLogo(null);
-    setLogoPreview(startup.logo || null);
+    setLogoPreview(startup.logo ? resolveMediaUrl(startup.logo) : null);
     setEditingStartup(startup);
     setIsModalOpen(true);
   };
@@ -149,6 +155,10 @@ export default function StartupsPage() {
       dataPayload.append('fundingStage', formDataFields.fundingStage);
       dataPayload.append('website', formDataFields.website);
       
+      if (formDataFields.status) {
+        dataPayload.append('status', formDataFields.status);
+      }
+
       if (selectedLogo) {
         dataPayload.append('logo', selectedLogo);
       }
@@ -211,12 +221,12 @@ export default function StartupsPage() {
           <h2 className="text-lg font-semibold text-foreground tracking-tight">Startup Registry</h2>
           <p className="text-xs text-muted-foreground">Manage and track incubator portfolio organizations</p>
         </div>
-        {user?.role === 'founder' && (
+        {(user?.role === 'founder' || user?.role === 'admin') && (
           <button
             onClick={handleOpenCreateModal}
             className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg transition-colors text-xs shadow-sm shrink-0"
           >
-            <Plus className="w-4 h-4" /> Register Startup
+            <Plus className="w-4 h-4" /> {user?.role === 'admin' ? 'Create Startup' : 'Register Startup'}
           </button>
         )}
       </div>
@@ -253,8 +263,8 @@ export default function StartupsPage() {
           <input
             type="text"
             placeholder="Search startup name..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            value={searchInput}
+            onChange={(e) => { setSearchInput(e.target.value); setPage(1); }}
             className="w-full pl-9 pr-3 py-1.5 bg-muted/20 border border-border rounded-lg text-xs placeholder:text-muted-foreground/60 text-foreground focus:outline-none focus:border-zinc-700"
           />
         </div>
@@ -300,7 +310,8 @@ export default function StartupsPage() {
           </select>
         </div>
 
-        {/* Admin Approval Filter */}
+        {/* Admin / founder status filter */}
+        {(user?.role === 'admin' || scope === 'my') && (
         <div className="relative">
           <Filter className="absolute left-3 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
           <select
@@ -314,6 +325,7 @@ export default function StartupsPage() {
             <option value="Rejected">Rejected</option>
           </select>
         </div>
+        )}
       </div>
 
       {/* Grid List View */}
@@ -342,11 +354,14 @@ export default function StartupsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-3">
                     <div className="w-10 h-10 rounded bg-muted/40 border border-border overflow-hidden flex items-center justify-center shrink-0">
-                      {startup.logo ? (
-                        <img src={startup.logo} alt={startup.startupName} className="w-full h-full object-cover" />
-                      ) : (
-                        <Building2 className="w-5 h-5 text-muted-foreground" />
-                      )}
+                      <img
+                        src={startup.logo ? resolveMediaUrl(startup.logo) : DEFAULT_LOGO}
+                        alt={startup.startupName}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = DEFAULT_LOGO;
+                        }}
+                      />
                     </div>
                     <span className={cn(
                       "text-[10px] uppercase font-bold px-2.5 py-1 rounded-full border tracking-wide",
@@ -493,11 +508,14 @@ export default function StartupsPage() {
               {/* Logo Select */}
               <div className="flex flex-col items-center gap-2 mb-4">
                 <div className="relative group cursor-pointer w-16 h-16 rounded-xl border border-border bg-muted overflow-hidden flex items-center justify-center">
-                  {logoPreview ? (
-                    <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
-                  ) : (
-                    <Building2 className="w-6 h-6 text-muted-foreground" />
-                  )}
+                  <img
+                    src={logoPreview || DEFAULT_LOGO}
+                    alt="Logo"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = DEFAULT_LOGO;
+                    }}
+                  />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                     <Upload className="w-4 h-4 text-white" />
                   </div>
@@ -546,21 +564,37 @@ export default function StartupsPage() {
                 )}
               </div>
 
-              {/* Funding Stage Select */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">Funding Stage</label>
-                <select
-                  {...register('fundingStage')}
-                  className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary cursor-pointer"
-                >
-                  <option value="Ideation">Ideation</option>
-                  <option value="Pre-Seed">Pre-Seed</option>
-                  <option value="Seed">Seed</option>
-                  <option value="Series A">Series A</option>
-                  <option value="Series B">Series B</option>
-                  <option value="Series C">Series C</option>
-                  <option value="Bootstrapped">Bootstrapped</option>
-                </select>
+              {/* Funding Stage & Status Select */}
+              <div className="grid gap-4 grid-cols-2">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Funding Stage</label>
+                  <select
+                    {...register('fundingStage')}
+                    className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary cursor-pointer"
+                  >
+                    <option value="Ideation">Ideation</option>
+                    <option value="Pre-Seed">Pre-Seed</option>
+                    <option value="Seed">Seed</option>
+                    <option value="Series A">Series A</option>
+                    <option value="Series B">Series B</option>
+                    <option value="Series C">Series C</option>
+                    <option value="Bootstrapped">Bootstrapped</option>
+                  </select>
+                </div>
+
+                {user?.role === 'admin' && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Approval Status</label>
+                  <select
+                    {...register('status')}
+                    className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary cursor-pointer"
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
+                </div>
+                )}
               </div>
 
               {/* Website */}

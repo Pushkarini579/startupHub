@@ -6,10 +6,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import projectService, { GetProjectsResponse } from '../../../services/projectService';
 import startupService from '../../../services/startupService';
-import userService from '../../../services/userService';
 import { Project, Startup, User } from '../../../types';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../hooks/useToast';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import {
   FolderKanban,
   Search,
@@ -25,7 +25,7 @@ import {
   Upload,
   User as UserIcon,
 } from 'lucide-react';
-import { formatDate, cn } from '../../../lib/utils';
+import { formatDate, cn, resolveMediaUrl } from '../../../lib/utils';
 
 const projectSchema = z.object({
   title: z.string().min(3, 'Project title must be at least 3 characters'),
@@ -46,7 +46,8 @@ export default function ProjectsPage() {
   const [data, setData] = useState<GetProjectsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const debouncedSearch = useDebouncedValue(searchInput, 300);
   const [status, setStatus] = useState('');
   const [priority, setPriority] = useState('');
   const [startupId, setStartupId] = useState('');
@@ -68,7 +69,7 @@ export default function ProjectsPage() {
       const res = await projectService.getProjects({
         page,
         limit: 10,
-        search,
+        search: debouncedSearch,
         status,
         priority,
         startupId,
@@ -89,7 +90,7 @@ export default function ProjectsPage() {
 
       // Admins fetch user list. Founders can fetch user list or default assign tasks.
       // We list users so tasks can be assigned to different members.
-      const userData = await userService.getUsers({ limit: 100 });
+      const userData = await projectService.getAssignees();
       setUsersList(userData.users);
     } catch (err) {
       console.warn('Failed to retrieve reference lists for forms:', err);
@@ -98,7 +99,7 @@ export default function ProjectsPage() {
 
   useEffect(() => {
     fetchProjects();
-  }, [page, search, status, priority, startupId]);
+  }, [page, debouncedSearch, status, priority, startupId]);
 
   useEffect(() => {
     fetchDropdownData();
@@ -140,7 +141,9 @@ export default function ProjectsPage() {
 
   const handleOpenEditModal = (project: Project) => {
     const sId = typeof project.startupId === 'object' ? project.startupId._id : project.startupId;
-    const uId = typeof project.assignedUser === 'object' ? project.assignedUser.id : project.assignedUser;
+    const uId = typeof project.assignedUser === 'object'
+      ? (project.assignedUser.id || (project.assignedUser as { _id?: string })._id || '')
+      : project.assignedUser;
     const formattedDate = project.deadline ? new Date(project.deadline).toISOString().substring(0, 10) : '';
 
     reset({
@@ -255,14 +258,14 @@ export default function ProjectsPage() {
           <h2 className="text-lg font-semibold text-foreground tracking-tight">Projects & Tasks</h2>
           <p className="text-xs text-muted-foreground">Plan, manage, and execute incubator milestones</p>
         </div>
-        {startupsList.length > 0 && (
-          <button
-            onClick={handleOpenCreateModal}
-            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg transition-colors text-xs shadow-sm shrink-0"
-          >
-            <Plus className="w-4 h-4" /> Create Task
-          </button>
-        )}
+        <button
+          onClick={handleOpenCreateModal}
+          disabled={startupsList.length === 0}
+          className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg transition-colors text-xs shadow-sm shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+          title={startupsList.length === 0 ? "You must have at least one startup to create a project" : ""}
+        >
+          <Plus className="w-4 h-4" /> Create Project
+        </button>
       </div>
 
       {/* Filter and Search Panel */}
@@ -273,8 +276,8 @@ export default function ProjectsPage() {
           <input
             type="text"
             placeholder="Search tasks..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            value={searchInput}
+            onChange={(e) => { setSearchInput(e.target.value); setPage(1); }}
             className="w-full pl-9 pr-3 py-1.5 bg-muted/20 border border-border rounded-lg text-xs placeholder:text-muted-foreground/60 text-foreground focus:outline-none focus:border-zinc-700"
           />
         </div>
@@ -405,12 +408,12 @@ export default function ProjectsPage() {
                     {/* Document */}
                     {project.attachment && (
                       <a
-                        href={project.attachment}
+                        href={resolveMediaUrl(project.attachment)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1 text-primary hover:underline font-bold shrink-0"
                       >
-                        <Paperclip className="w-3.5 h-3.5" /> Docs PDF
+                        <Paperclip className="w-3.5 h-3.5" /> View Attachment
                       </a>
                     )}
                   </div>
@@ -471,7 +474,7 @@ export default function ProjectsPage() {
 
           <div className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 shadow-2xl relative z-10 max-h-[90vh] overflow-y-auto animate-in scale-in duration-200">
             <h3 className="text-lg font-bold text-foreground mb-1">
-              {editingProject ? 'Modify Project Task' : 'Create Project Task'}
+              {editingProject ? 'Modify Project Task' : 'Create New Project'}
             </h3>
             <p className="text-xs text-muted-foreground mb-6">
               Establish project milestones and assign team members below.

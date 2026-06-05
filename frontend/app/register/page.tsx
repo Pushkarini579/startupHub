@@ -9,6 +9,7 @@ import * as z from 'zod';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
 import { Sparkles, Eye, EyeOff, Loader2, ArrowRight, Upload, Image as ImageIcon } from 'lucide-react';
+import { DEFAULT_AVATAR } from '../../lib/utils';
 
 const registerSchema = z.object({
   name: z.string().min(1, 'Name is required').max(50, 'Name is too long'),
@@ -106,11 +107,14 @@ export default function RegisterPage() {
           <div className="flex flex-col items-center gap-3">
             <div className="relative group cursor-pointer">
               <div className="w-16 h-16 rounded-lg border border-zinc-800 bg-zinc-950 overflow-hidden flex items-center justify-center relative">
-                {previewUrl ? (
-                  <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                ) : (
-                  <ImageIcon className="w-6 h-6 text-zinc-700 group-hover:text-zinc-500 transition-colors" />
-                )}
+                <img
+                  src={previewUrl || DEFAULT_AVATAR}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = DEFAULT_AVATAR;
+                  }}
+                />
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                   <Upload className="w-4 h-4 text-white" />
                 </div>

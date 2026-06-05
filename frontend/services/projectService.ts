@@ -1,5 +1,5 @@
 import api from './api';
-import { Project } from '../types';
+import { Project, User } from '../types';
 
 export interface GetProjectsResponse {
   projects: Project[];
@@ -34,6 +34,10 @@ export const projectService = {
 
   getProjectById: async (id: string): Promise<{ project: Project }> => {
     return api.get<{ project: Project }>(`/projects/${id}`);
+  },
+
+  getAssignees: async (): Promise<{ users: User[] }> => {
+    return api.get<{ users: User[] }>('/projects/assignees');
   },
 
   createProject: async (formData: FormData): Promise<{ project: Project }> => {

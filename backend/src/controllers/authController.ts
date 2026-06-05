@@ -4,16 +4,18 @@ import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { uploadFile } from '../config/cloudinary';
+import { getJwtSecret } from '../utils/jwtSecret';
+import { formatUserResponse } from '../utils/formatUser';
 
 const generateToken = (id: string): string => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'startuphub_super_secret_jwt_key_2026', {
+  return jwt.sign({ id }, getJwtSecret(), {
     expiresIn: '30d',
   });
 };
 
 export const register = async (req: AuthRequest, res: Response) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Please provide all required fields' });
@@ -42,7 +44,7 @@ export const register = async (req: AuthRequest, res: Response) => {
       name,
       email,
       password: hashedPassword,
-      role: role || 'founder',
+      role: 'founder',
       profileImage: profileImageUrl,
     });
 
@@ -50,13 +52,7 @@ export const register = async (req: AuthRequest, res: Response) => {
 
     return res.status(201).json({
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        profileImage: user.profileImage,
-      },
+      user: formatUserResponse(user),
     });
   } catch (error) {
     console.error('Registration Error:', error);
@@ -86,13 +82,7 @@ export const login = async (req: AuthRequest, res: Response) => {
 
     return res.status(200).json({
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        profileImage: user.profileImage,
-      },
+      user: formatUserResponse(user),
     });
   } catch (error) {
     console.error('Login Error:', error);
@@ -106,13 +96,7 @@ export const getMe = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ message: 'Not authenticated' });
     }
     return res.status(200).json({
-      user: {
-        id: req.user._id,
-        name: req.user.name,
-        email: req.user.email,
-        role: req.user.role,
-        profileImage: req.user.profileImage,
-      },
+      user: formatUserResponse(req.user),
     });
   } catch (error) {
     console.error('Get Profile Error:', error);
@@ -159,13 +143,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
 
     return res.status(200).json({
       message: 'Profile updated successfully',
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        profileImage: user.profileImage,
-      },
+      user: formatUserResponse(user),
     });
   } catch (error) {
     console.error('Update Profile Error:', error);

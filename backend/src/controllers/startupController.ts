@@ -1,5 +1,7 @@
 import { Response } from 'express';
 import { Startup } from '../models/Startup';
+import { Project } from '../models/Project';
+import { Mentor } from '../models/Mentor';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { uploadFile } from '../config/cloudinary';
 
@@ -22,12 +24,14 @@ export const getStartups = async (req: AuthRequest, res: Response) => {
       const scope = req.query.scope || 'my';
       if (scope === 'my') {
         query.founderId = req.user._id;
+        if (status) {
+          query.status = status;
+        }
       } else {
-        // Founders can see other approved startups if searching/browsing
+        // Founders browsing the incubator directory see approved startups only
         query.status = 'Approved';
       }
-    } else if (req.user.role === 'admin' && status) {
-      // Admin filter by status
+    } else if (status) {
       query.status = status;
     }
 
@@ -117,8 +121,11 @@ export const createStartup = async (req: AuthRequest, res: Response) => {
       );
     }
 
-    // Default status for founder is Pending. Admins can create Approved startups directly.
-    const status = req.user.role === 'admin' ? 'Approved' : 'Pending';
+    // Default status for founder is Pending. Admins can specify status or default to Approved.
+    let status = req.user.role === 'admin' ? 'Approved' : 'Pending';
+    if (req.user.role === 'admin' && req.body.status) {
+      status = req.body.status;
+    }
 
     const startup = await Startup.create({
       startupName,
@@ -233,6 +240,10 @@ export const deleteStartup = async (req: AuthRequest, res: Response) => {
     if (req.user.role !== 'admin' && startup.founderId.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Forbidden: You cannot delete this startup' });
     }
+
+    // Cascade delete associated projects and mentors
+    await Project.deleteMany({ startupId: req.params.id });
+    await Mentor.deleteMany({ startupAssigned: req.params.id });
 
     // We use deleteOne in mongoose 8
     await Startup.deleteOne({ _id: req.params.id });

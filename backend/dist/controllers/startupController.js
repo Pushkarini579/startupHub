@@ -18,14 +18,16 @@ const getStartups = async (req, res) => {
             const scope = req.query.scope || 'my';
             if (scope === 'my') {
                 query.founderId = req.user._id;
+                if (status) {
+                    query.status = status;
+                }
             }
             else {
-                // Founders can see other approved startups if searching/browsing
+                // Founders browsing the incubator directory see approved startups only
                 query.status = 'Approved';
             }
         }
-        else if (req.user.role === 'admin' && status) {
-            // Admin filter by status
+        else if (status) {
             query.status = status;
         }
         // Search filter

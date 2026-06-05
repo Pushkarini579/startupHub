@@ -9,6 +9,7 @@ import startupService from '../../../services/startupService';
 import { Mentor, Startup } from '../../../types';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../hooks/useToast';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import {
   Users2,
   Search,
@@ -22,7 +23,7 @@ import {
   Loader2,
   Upload,
 } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn, resolveMediaUrl, DEFAULT_AVATAR } from '../../../lib/utils';
 
 const mentorSchema = z.object({
   name: z.string().min(2, 'Mentor name must be at least 2 characters'),
@@ -40,7 +41,8 @@ export default function MentorsPage() {
   const [data, setData] = useState<GetMentorsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const debouncedSearch = useDebouncedValue(searchInput, 300);
   const [expertise, setExpertise] = useState('');
   const [scope, setScope] = useState<'my' | 'all'>('my');
 
@@ -66,7 +68,7 @@ export default function MentorsPage() {
       const res = await mentorService.getMentors({
         page,
         limit: 10,
-        search,
+        search: debouncedSearch,
         expertise,
         scope,
       });
@@ -90,7 +92,7 @@ export default function MentorsPage() {
 
   useEffect(() => {
     fetchMentors();
-  }, [page, search, expertise, scope]);
+  }, [page, debouncedSearch, expertise, scope]);
 
   useEffect(() => {
     fetchStartupsDropdown();
@@ -134,7 +136,7 @@ export default function MentorsPage() {
       startupAssigned: sId,
     });
     setSelectedPhoto(null);
-    setPhotoPreview(mentor.profileImage || null);
+    setPhotoPreview(mentor.profileImage ? resolveMediaUrl(mentor.profileImage) : null);
     setEditingMentor(mentor);
     setIsModalOpen(true);
   };
@@ -239,8 +241,8 @@ export default function MentorsPage() {
           <input
             type="text"
             placeholder="Search mentor name..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            value={searchInput}
+            onChange={(e) => { setSearchInput(e.target.value); setPage(1); }}
             className="w-full pl-10 pr-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs placeholder:text-muted-foreground/60 text-foreground focus:outline-none focus:border-primary/80"
           />
         </div>
@@ -289,9 +291,12 @@ export default function MentorsPage() {
                   {/* Photo and general */}
                   <div className="flex items-center gap-3">
                     <img
-                      src={mentor.profileImage || 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=100'}
+                      src={mentor.profileImage ? resolveMediaUrl(mentor.profileImage) : DEFAULT_AVATAR}
                       alt={mentor.name}
                       className="w-14 h-14 rounded-xl border border-border object-cover bg-muted shrink-0"
+                      onError={(e) => {
+                        e.currentTarget.src = DEFAULT_AVATAR;
+                      }}
                     />
                     <div className="min-w-0">
                       <h4 className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">
@@ -387,11 +392,14 @@ export default function MentorsPage() {
               {/* Profile Image Select */}
               <div className="flex flex-col items-center gap-2 mb-4">
                 <div className="relative group cursor-pointer w-16 h-16 rounded-xl border border-border bg-muted overflow-hidden flex items-center justify-center">
-                  {photoPreview ? (
-                    <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
-                  ) : (
-                    <Users2 className="w-6 h-6 text-muted-foreground" />
-                  )}
+                  <img
+                    src={photoPreview || DEFAULT_AVATAR}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = DEFAULT_AVATAR;
+                    }}
+                  />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                     <Upload className="w-4 h-4 text-white" />
                   </div>

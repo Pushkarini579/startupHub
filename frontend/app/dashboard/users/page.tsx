@@ -9,6 +9,7 @@ import userService, { GetUsersResponse } from '../../../services/userService';
 import { User } from '../../../types';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../hooks/useToast';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import {
   ShieldCheck,
   Search,
@@ -21,7 +22,7 @@ import {
   Upload,
   User as UserIcon,
 } from 'lucide-react';
-import { formatDate, cn } from '../../../lib/utils';
+import { formatDate, cn, resolveMediaUrl, DEFAULT_AVATAR } from '../../../lib/utils';
 
 const userSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -40,7 +41,8 @@ export default function UsersPage() {
   const [data, setData] = useState<GetUsersResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const debouncedSearch = useDebouncedValue(searchInput, 300);
   const [role, setRole] = useState('');
 
   // Modals
@@ -63,7 +65,7 @@ export default function UsersPage() {
       const res = await userService.getUsers({
         page,
         limit: 10,
-        search,
+        search: debouncedSearch,
         role,
       });
       setData(res);
@@ -78,7 +80,7 @@ export default function UsersPage() {
     if (currentUser?.role === 'admin') {
       fetchUsers();
     }
-  }, [page, search, role, currentUser]);
+  }, [page, debouncedSearch, role, currentUser]);
 
   const {
     register,
@@ -185,8 +187,8 @@ export default function UsersPage() {
           <input
             type="text"
             placeholder="Search name or email address..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            value={searchInput}
+            onChange={(e) => { setSearchInput(e.target.value); setPage(1); }}
             className="w-full pl-10 pr-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs placeholder:text-muted-foreground/60 text-foreground focus:outline-none focus:border-primary/80"
           />
         </div>
@@ -240,9 +242,12 @@ export default function UsersPage() {
                       {/* Member */}
                       <td className="p-4 pl-6 text-foreground flex items-center gap-3">
                         <img
-                          src={u.profileImage || 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=100'}
+                          src={u.profileImage ? resolveMediaUrl(u.profileImage) : DEFAULT_AVATAR}
                           alt={u.name}
                           className="w-8 h-8 rounded-lg object-cover bg-muted border border-border"
+                          onError={(e) => {
+                            e.currentTarget.src = DEFAULT_AVATAR;
+                          }}
                         />
                         <span className="font-bold text-sm truncate max-w-[150px]">{u.name}</span>
                       </td>
@@ -269,7 +274,7 @@ export default function UsersPage() {
                       {/* Date */}
                       <td className="p-4">
                         <span className="flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5" /> {(u as any).createdAt ? formatDate((u as any).createdAt) : 'N/A'}
+                          <Calendar className="w-3.5 h-3.5" /> {u.createdAt ? formatDate(u.createdAt) : 'N/A'}
                         </span>
                       </td>
 
@@ -333,11 +338,14 @@ export default function UsersPage() {
               {/* Photo Select */}
               <div className="flex flex-col items-center gap-2 mb-4">
                 <div className="relative group cursor-pointer w-16 h-16 rounded-xl border border-border bg-muted overflow-hidden flex items-center justify-center">
-                  {photoPreview ? (
-                    <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
-                  ) : (
-                    <UserIcon className="w-6 h-6 text-muted-foreground" />
-                  )}
+                  <img
+                    src={photoPreview || DEFAULT_AVATAR}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = DEFAULT_AVATAR;
+                    }}
+                  />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                     <Upload className="w-4 h-4 text-white" />
                   </div>

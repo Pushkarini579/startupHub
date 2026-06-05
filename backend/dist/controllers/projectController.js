@@ -1,9 +1,42 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProject = exports.updateProject = exports.createProject = exports.getProjectById = exports.getProjects = void 0;
+exports.deleteProject = exports.updateProject = exports.createProject = exports.getProjectById = exports.getProjects = exports.getAssignees = void 0;
 const Project_1 = require("../models/Project");
 const Startup_1 = require("../models/Startup");
+const User_1 = require("../models/User");
 const cloudinary_1 = require("../config/cloudinary");
+const formatUser_1 = require("../utils/formatUser");
+const getAssignees = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+        if (req.user.role === 'admin') {
+            const users = await User_1.User.find().select('-password').sort({ name: 1 });
+            return res.status(200).json({
+                users: users.map((user) => (0, formatUser_1.formatUserResponse)(user)),
+            });
+        }
+        const myStartups = await Startup_1.Startup.find({ founderId: req.user._id }).select('_id');
+        const myStartupIds = myStartups.map((startup) => startup._id);
+        const assignedUserIds = await Project_1.Project.distinct('assignedUser', {
+            startupId: { $in: myStartupIds },
+        });
+        const uniqueIds = new Set([req.user._id.toString()]);
+        assignedUserIds.forEach((id) => uniqueIds.add(id.toString()));
+        const users = await User_1.User.find({ _id: { $in: Array.from(uniqueIds) } })
+            .select('-password')
+            .sort({ name: 1 });
+        return res.status(200).json({
+            users: users.map((user) => (0, formatUser_1.formatUserResponse)(user)),
+        });
+    }
+    catch (error) {
+        console.error('Get Assignees Error:', error);
+        return res.status(500).json({ message: 'Server error retrieving assignees' });
+    }
+};
+exports.getAssignees = getAssignees;
 const getProjects = async (req, res) => {
     try {
         if (!req.user) {

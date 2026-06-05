@@ -78,15 +78,7 @@ const getAnalytics = async (req, res) => {
                 startups: item.count,
             };
         });
-        // Fallback/Default growth structure if empty
-        const growthChartData = formattedGrowth.length > 0 ? formattedGrowth : [
-            { name: 'Jan 26', startups: 1 },
-            { name: 'Feb 26', startups: 2 },
-            { name: 'Mar 26', startups: 4 },
-            { name: 'Apr 26', startups: 5 },
-            { name: 'May 26', startups: 8 },
-            { name: 'Jun 26', startups: totalStartups || 10 },
-        ];
+        const growthChartData = formattedGrowth;
         // 6. CHART: Monthly Project Activity (Created per month)
         const projectActivityStats = await Project_1.Project.aggregate([
             { $match: projectQuery },
@@ -109,14 +101,7 @@ const getAnalytics = async (req, res) => {
                 projects: item.count,
             };
         });
-        const projectActivityChartData = formattedProjectActivity.length > 0 ? formattedProjectActivity : [
-            { name: 'Jan 26', projects: 2 },
-            { name: 'Feb 26', projects: 5 },
-            { name: 'Mar 26', projects: 8 },
-            { name: 'Apr 26', projects: 12 },
-            { name: 'May 26', projects: 18 },
-            { name: 'Jun 26', projects: totalProjects || 25 },
-        ];
+        const projectActivityChartData = formattedProjectActivity;
         // 7. RECENT ACTIVITIES FEED
         // Startup registrations
         const recentStartups = await Startup_1.Startup.find(startupQuery)
@@ -176,25 +161,9 @@ const getAnalytics = async (req, res) => {
                 activeMentors,
             },
             charts: {
-                industryStats: industryStats.length > 0 ? industryStats : [
-                    { name: 'SaaS', value: 3 },
-                    { name: 'Fintech', value: 2 },
-                    { name: 'AI/ML', value: 3 },
-                    { name: 'Healthtech', value: 1 },
-                    { name: 'Clean Energy', value: 1 },
-                ],
-                stageStats: stageStats.length > 0 ? stageStats : [
-                    { name: 'Ideation', value: 2 },
-                    { name: 'Pre-Seed', value: 3 },
-                    { name: 'Seed', value: 3 },
-                    { name: 'Series A', value: 2 },
-                ],
-                projectStatusStats: projectStatusStats.length > 0 ? projectStatusStats : [
-                    { name: 'To Do', value: 5 },
-                    { name: 'In Progress', value: 10 },
-                    { name: 'Under Review', value: 4 },
-                    { name: 'Completed', value: 6 },
-                ],
+                industryStats,
+                stageStats,
+                projectStatusStats,
                 growthChartData,
                 projectActivityChartData,
             },

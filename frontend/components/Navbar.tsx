@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../hooks/useAuth';
 import { Menu, Sun, Moon, Sparkles, User as UserIcon, LogOut, ChevronDown } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, resolveMediaUrl, DEFAULT_AVATAR } from '../lib/utils';
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -88,9 +88,10 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
             className="flex items-center gap-2 p-1 rounded border border-border bg-card hover:bg-muted/30 transition-all text-xs font-medium"
           >
             <img
-              src={user?.profileImage || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100'}
+              src={user?.profileImage ? resolveMediaUrl(user.profileImage) : DEFAULT_AVATAR}
               alt="Avatar"
               className="w-6 h-6 rounded object-cover bg-muted"
+              onError={(e) => { e.currentTarget.src = DEFAULT_AVATAR; }}
             />
             <span className="hidden sm:inline text-muted-foreground">{user?.name}</span>
             <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0" />

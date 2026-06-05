@@ -13,13 +13,14 @@ import {
   FolderKanban,
   GraduationCap,
   Sparkles,
-  TrendingUp,
   Loader2,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
 
 export default function DashboardOverviewPage() {
   const { user } = useAuth();
+  const { addToast } = useToast();
   const [data, setData] = useState<AnalyticsResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -28,8 +29,8 @@ export default function DashboardOverviewPage() {
       try {
         const res = await analyticsService.getAnalytics();
         setData(res);
-      } catch (error) {
-        console.error('Failed to load analytics dashboard data:', error);
+      } catch (error: any) {
+        addToast('error', 'Analytics Unavailable', error?.message || 'Failed to load dashboard analytics.');
       } finally {
         setLoading(false);
       }
