@@ -438,7 +438,7 @@ export default function MentorsPage() {
                 <label className="text-xs font-semibold text-foreground">Expertise Vertical</label>
                 <select
                   {...register('expertise')}
-                  className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary cursor-pointer"
+                  className="select-premium w-full"
                 >
                   <option value="">Select expertise domain...</option>
                   <option value="Tech Architecture & Cloud Scale">Tech Architecture & Cloud Scale</option>
@@ -471,7 +471,7 @@ export default function MentorsPage() {
                 <label className="text-xs font-semibold text-foreground">Startup Alignment</label>
                 <select
                   {...register('startupAssigned')}
-                  className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary cursor-pointer"
+                  className="select-premium w-full"
                 >
                   <option value="">Select startup assignment...</option>
                   {startupsList.map((s) => (

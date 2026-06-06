@@ -273,26 +273,22 @@ export default function StartupsPage() {
         <div className="flex flex-wrap items-center gap-3">
           <select
             value={industry}
-            onChange={(e) => { setIndustry(e.target.value); setPage(1); }}
-            className="select-premium min-w-[140px]"
+            onChange={(e) => setIndustry(e.target.value)}
+            className="select-filter min-w-[140px]"
           >
             <option value="">All Sectors</option>
             <option value="SaaS">SaaS</option>
-            <option value="Fintech">Fintech</option>
-            <option value="Healthtech">Healthtech</option>
+            <option value="FinTech">FinTech</option>
+            <option value="HealthTech">HealthTech</option>
             <option value="AI/ML">AI/ML</option>
-            <option value="Clean Energy">Clean Energy</option>
-            <option value="Cybersecurity">Cybersecurity</option>
-            <option value="Edtech">Edtech</option>
-            <option value="Web3">Web3</option>
-            <option value="AR/VR">AR/VR</option>
-            <option value="Logistics">Logistics</option>
+            <option value="E-commerce">E-commerce</option>
+            <option value="EdTech">EdTech</option>
           </select>
 
           <select
             value={fundingStage}
-            onChange={(e) => { setFundingStage(e.target.value); setPage(1); }}
-            className="select-premium min-w-[140px]"
+            onChange={(e) => setFundingStage(e.target.value)}
+            className="select-filter min-w-[140px]"
           >
             <option value="">All Stages</option>
             <option value="Ideation">Ideation</option>
@@ -300,7 +296,6 @@ export default function StartupsPage() {
             <option value="Seed">Seed</option>
             <option value="Series A">Series A</option>
             <option value="Series B">Series B</option>
-            <option value="Series C">Series C</option>
             <option value="Bootstrapped">Bootstrapped</option>
           </select>
 
@@ -530,7 +525,7 @@ export default function StartupsPage() {
                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Market Sector</label>
                 <select
                   {...register('industry')}
-                  className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs text-foreground focus:outline-none focus:border-primary/50 cursor-pointer font-bold uppercase tracking-wider appearance-none"
+                  className="select-premium w-full"
                 >
                   <option value="">Select Sector...</option>
                   <option value="AI/ML">AI/ML</option>
@@ -555,7 +550,7 @@ export default function StartupsPage() {
                   <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Venture Stage</label>
                   <select
                     {...register('fundingStage')}
-                    className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs text-foreground focus:outline-none focus:border-primary/50 cursor-pointer font-bold uppercase tracking-wider appearance-none"
+                    className="select-premium w-full"
                   >
                     <option value="Ideation">Ideation</option>
                     <option value="Pre-Seed">Pre-Seed</option>
@@ -572,7 +567,7 @@ export default function StartupsPage() {
                   <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Review Status</label>
                   <select
                     {...register('status')}
-                    className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs text-foreground focus:outline-none focus:border-primary/50 cursor-pointer font-bold uppercase tracking-wider appearance-none"
+                    className="select-premium w-full"
                   >
                     <option value="Pending">Pending</option>
                     <option value="Approved">Approved</option>

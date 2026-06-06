@@ -286,7 +286,7 @@ export default function ProjectsPage() {
           <select
             value={status}
             onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-            className="select-premium min-w-[140px]"
+            className="select-filter min-w-[140px]"
           >
             <option value="">All Statuses</option>
             <option value="To Do">To Do</option>
@@ -298,7 +298,7 @@ export default function ProjectsPage() {
           <select
             value={priority}
             onChange={(e) => { setPriority(e.target.value); setPage(1); }}
-            className="select-premium min-w-[140px]"
+            className="select-filter min-w-[140px]"
           >
             <option value="">All Priorities</option>
             <option value="Low">Low</option>
@@ -309,7 +309,7 @@ export default function ProjectsPage() {
           <select
             value={startupId}
             onChange={(e) => { setStartupId(e.target.value); setPage(1); }}
-            className="select-premium min-w-[160px]"
+            className="select-filter min-w-[160px]"
           >
             <option value="">All Ventures</option>
             {startupsList.map((s) => (
@@ -466,7 +466,7 @@ export default function ProjectsPage() {
                 <label className="text-xs font-semibold text-foreground">Startup Project Owner</label>
                 <select
                   {...register('startupId')}
-                  className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary cursor-pointer"
+                  className="select-premium w-full"
                 >
                   <option value="">Select organizational startup...</option>
                   {startupsList.map((s) => (
@@ -483,7 +483,7 @@ export default function ProjectsPage() {
                 <label className="text-xs font-semibold text-foreground">Assignee Target</label>
                 <select
                   {...register('assignedUser')}
-                  className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary cursor-pointer"
+                  className="select-premium w-full"
                 >
                   <option value="">Select team member...</option>
                   {usersList.map((u) => (
@@ -505,7 +505,7 @@ export default function ProjectsPage() {
                   <label className="text-xs font-semibold text-foreground">Priority</label>
                   <select
                     {...register('priority')}
-                    className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary cursor-pointer"
+                    className="select-premium w-full"
                   >
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
@@ -516,7 +516,7 @@ export default function ProjectsPage() {
                   <label className="text-xs font-semibold text-foreground">Task Status</label>
                   <select
                     {...register('status')}
-                    className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary cursor-pointer"
+                    className="select-premium w-full"
                   >
                     <option value="To Do">To Do</option>
                     <option value="In Progress">In Progress</option>

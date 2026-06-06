@@ -198,7 +198,7 @@ export default function UsersPage() {
           <select
             value={role}
             onChange={(e) => { setRole(e.target.value); setPage(1); }}
-            className="select-premium min-w-[200px]"
+            className="select-filter min-w-[200px]"
           >
             <option value="">All Access Levels</option>
             <option value="admin">Platform Admin</option>
@@ -399,7 +399,7 @@ export default function UsersPage() {
                 <label className="text-xs font-semibold text-foreground">Account Authority Role</label>
                 <select
                   {...register('role')}
-                  className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary cursor-pointer"
+                  className="select-premium w-full"
                 >
                   <option value="founder">Founder Account</option>
                   <option value="admin">Administrator Account</option>
