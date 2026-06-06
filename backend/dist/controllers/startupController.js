@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteStartup = exports.approveStartup = exports.updateStartup = exports.createStartup = exports.getStartupById = exports.getStartups = void 0;
 const Startup_1 = require("../models/Startup");
+const Project_1 = require("../models/Project");
+const Mentor_1 = require("../models/Mentor");
 const cloudinary_1 = require("../config/cloudinary");
 const getStartups = async (req, res) => {
     try {
@@ -101,8 +103,11 @@ const createStartup = async (req, res) => {
         if (req.file) {
             logoUrl = await (0, cloudinary_1.uploadFile)(req.file.buffer, req.file.originalname, 'logos', req.file.mimetype);
         }
-        // Default status for founder is Pending. Admins can create Approved startups directly.
-        const status = req.user.role === 'admin' ? 'Approved' : 'Pending';
+        // Default status for founder is Pending. Admins can specify status or default to Approved.
+        let status = req.user.role === 'admin' ? 'Approved' : 'Pending';
+        if (req.user.role === 'admin' && req.body.status) {
+            status = req.body.status;
+        }
         const startup = await Startup_1.Startup.create({
             startupName,
             industry,
@@ -201,6 +206,9 @@ const deleteStartup = async (req, res) => {
         if (req.user.role !== 'admin' && startup.founderId.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: 'Forbidden: You cannot delete this startup' });
         }
+        // Cascade delete associated projects and mentors
+        await Project_1.Project.deleteMany({ startupId: req.params.id });
+        await Mentor_1.Mentor.deleteMany({ startupAssigned: req.params.id });
         // We use deleteOne in mongoose 8
         await Startup_1.Startup.deleteOne({ _id: req.params.id });
         return res.status(200).json({ message: 'Startup deleted successfully' });

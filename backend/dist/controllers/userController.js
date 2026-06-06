@@ -8,6 +8,7 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const User_1 = require("../models/User");
 const Startup_1 = require("../models/Startup");
 const Project_1 = require("../models/Project");
+const Mentor_1 = require("../models/Mentor");
 const cloudinary_1 = require("../config/cloudinary");
 const formatUser_1 = require("../utils/formatUser");
 const getUsers = async (req, res) => {
@@ -138,9 +139,13 @@ const deleteUser = async (req, res) => {
             const startupIds = startups.map((s) => s._id);
             // Delete projects associated with these startups
             await Project_1.Project.deleteMany({ startupId: { $in: startupIds } });
+            // Delete mentors associated with these startups
+            await Mentor_1.Mentor.deleteMany({ startupAssigned: { $in: startupIds } });
             // Delete startups
             await Startup_1.Startup.deleteMany({ founderId: user._id });
         }
+        // Also delete any project where this user was the direct assignee (if they weren't the founder)
+        await Project_1.Project.deleteMany({ assignedUser: user._id });
         await User_1.User.deleteOne({ _id: req.params.id });
         return res.status(200).json({ message: 'User and all associated data deleted successfully' });
     }
