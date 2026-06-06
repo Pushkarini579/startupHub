@@ -22,6 +22,8 @@ import {
   Building2,
   Loader2,
   Upload,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { cn, resolveMediaUrl, DEFAULT_AVATAR } from '../../../lib/utils';
 
@@ -193,18 +195,18 @@ export default function MentorsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
-      {/* Header and tools */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-5">
+      {/* Header section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-foreground">Mentor Network</h2>
-          <p className="text-xs text-muted-foreground mt-1">Connect with industry experts and advisors</p>
+          <h2 className="text-xl font-black text-foreground tracking-tighter uppercase">Advisory Network</h2>
+          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mt-0.5">Manage domain experts and mentor assignments</p>
         </div>
         {user?.role === 'admin' && (
           <button
             onClick={handleOpenCreateModal}
-            className="flex items-center gap-2 self-start sm:self-center bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-4 py-2.5 rounded-xl transition-all shadow-md shadow-primary/10 text-sm shrink-0"
+            className="btn-primary gap-2 text-xs font-black uppercase tracking-widest h-10 shadow-md"
           >
-            <Plus className="w-4.5 h-4.5" /> Add Mentor
+            <Plus className="w-4 h-4" /> Onboard Mentor
           </button>
         )}
       </div>
@@ -233,27 +235,25 @@ export default function MentorsPage() {
         </div>
       )}
 
-      {/* Filters */}
-      <div className="grid gap-4 sm:grid-cols-2 bg-card p-4 rounded-2xl border border-border shadow-sm">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3.5 top-3 w-4.5 h-4.5 text-muted-foreground" />
+      {/* Filter and Search Panel */}
+      <div className="p-4 border bg-card border-border/50 rounded-xl shadow-sm flex flex-col lg:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search mentor name..."
+            placeholder="Search mentors by name or expertise..."
             value={searchInput}
             onChange={(e) => { setSearchInput(e.target.value); setPage(1); }}
-            className="w-full pl-10 pr-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs placeholder:text-muted-foreground/60 text-foreground focus:outline-none focus:border-primary/80"
+            className="w-full pl-9 pr-4 py-2 bg-muted/20 border border-border/50 rounded-lg text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 transition-all font-medium"
           />
         </div>
 
         {/* Expertise Filter */}
         <div className="relative">
-          <Filter className="absolute left-3.5 top-3 w-4.5 h-4.5 text-muted-foreground" />
           <select
             value={expertise}
             onChange={(e) => { setExpertise(e.target.value); setPage(1); }}
-            className="w-full pl-10 pr-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary/80 appearance-none cursor-pointer"
+            className="select-premium min-w-[200px]"
           >
             <option value="">All Expertise Areas</option>
             <option value="Tech Architecture">Tech Architecture & Cloud Scale</option>
@@ -285,41 +285,43 @@ export default function MentorsPage() {
             {data.mentors.map((mentor) => (
               <div
                 key={mentor._id}
-                className="flex flex-col justify-between border bg-card border-border rounded-2xl shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-200 group p-5"
+                className="card-premium p-6 hover:border-primary/30 transition-all group flex flex-col justify-between"
               >
                 <div className="space-y-4">
                   {/* Photo and general */}
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={mentor.profileImage ? resolveMediaUrl(mentor.profileImage) : DEFAULT_AVATAR}
-                      alt={mentor.name}
-                      className="w-14 h-14 rounded-xl border border-border object-cover bg-muted shrink-0"
-                      onError={(e) => {
-                        e.currentTarget.src = DEFAULT_AVATAR;
-                      }}
-                    />
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-xl border-2 border-border bg-muted overflow-hidden shrink-0 shadow-sm group-hover:border-primary/50 transition-all">
+                      <img
+                        src={mentor.profileImage ? resolveMediaUrl(mentor.profileImage) : DEFAULT_AVATAR}
+                        alt={mentor.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = DEFAULT_AVATAR;
+                        }}
+                      />
+                    </div>
                     <div className="min-w-0">
-                      <h4 className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">
+                      <h4 className="font-bold text-sm text-foreground uppercase tracking-tight truncate group-hover:text-primary transition-colors">
                         {mentor.name}
                       </h4>
-                      <span className="text-[10px] text-muted-foreground flex items-center gap-1.5 mt-0.5 font-bold uppercase tracking-wider">
-                        <Award className="w-3.5 h-3.5 shrink-0 text-primary" /> {mentor.expertise}
+                      <span className="text-[10px] text-primary flex items-center gap-1.5 mt-1 font-black uppercase tracking-widest">
+                        <Award className="w-3.5 h-3.5 shrink-0" /> {mentor.expertise}
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2 pt-3 border-t border-border/40 text-[11px] text-muted-foreground">
+                  <div className="flex flex-col gap-2 pt-3 border-t border-border/40 text-[11px] text-muted-foreground font-medium">
                     <a
                       href={`mailto:${mentor.email}`}
-                      className="flex items-center gap-2 hover:text-foreground transition-colors truncate font-medium"
+                      className="flex items-center gap-2 hover:text-foreground transition-colors truncate"
                     >
                       <Mail className="w-3.5 h-3.5 shrink-0" />
                       {mentor.email}
                     </a>
-                    <div className="flex items-center gap-2 truncate">
-                      <Building2 className="w-3.5 h-3.5 shrink-0" />
+                    <div className="flex items-center gap-2 truncate uppercase tracking-tighter">
+                      <Building2 className="w-3.5 h-3.5 shrink-0 text-primary" />
                       <span>
-                        Assigned Startup: {typeof mentor.startupAssigned === 'object' ? mentor.startupAssigned.startupName : 'Unassigned'}
+                        Venture: {typeof mentor.startupAssigned === 'object' ? mentor.startupAssigned.startupName : 'Unassigned'}
                       </span>
                     </div>
                   </div>
@@ -330,14 +332,14 @@ export default function MentorsPage() {
                   <div className="flex items-center justify-end gap-2 pt-4 mt-4 border-t border-border/40 shrink-0">
                     <button
                       onClick={() => handleOpenEditModal(mentor)}
-                      className="p-2 border border-border text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-xl transition-all"
+                      className="p-2 border border-border text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-xl transition-all shadow-sm"
                       title="Edit Mentor Profile"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteMentor(mentor._id)}
-                      className="p-2 border border-border text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
+                      className="p-2 border border-border text-destructive hover:bg-destructive/10 rounded-xl transition-all shadow-sm"
                       title="Delete Mentor Profile"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -350,24 +352,31 @@ export default function MentorsPage() {
 
           {/* Pagination */}
           {data.pagination && data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-border pt-4 select-none">
-              <span className="text-xs text-muted-foreground">
-                Showing Page {data.pagination.page} of {data.pagination.totalPages} ({data.pagination.totalItems} mentors)
-              </span>
-              <div className="flex items-center gap-2">
+            <div className="px-6 py-4 border border-border/50 rounded-xl flex items-center justify-between bg-muted/5 mt-6">
+              <p className="pagination-info">
+                Displaying Page <span>{data.pagination.page}</span> of <span>{data.pagination.totalPages}</span>
+              </p>
+              <div className="pagination-container">
                 <button
                   disabled={page === 1}
                   onClick={() => setPage(page - 1)}
-                  className="px-3.5 py-1.5 border border-border rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="pagination-btn"
+                  title="Previous Page"
                 >
-                  Previous
+                  <ChevronLeft className="w-4 h-4" />
                 </button>
+                <div className="flex items-center gap-1">
+                  <span className="pagination-btn pagination-btn-active w-8 h-8 flex items-center justify-center text-[10px] font-black">
+                    {page}
+                  </span>
+                </div>
                 <button
-                  disabled={page === data.pagination.totalPages}
+                  disabled={page >= data.pagination.totalPages}
                   onClick={() => setPage(page + 1)}
-                  className="px-3.5 py-1.5 border border-border rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="pagination-btn"
+                  title="Next Page"
                 >
-                  Next
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             </div>

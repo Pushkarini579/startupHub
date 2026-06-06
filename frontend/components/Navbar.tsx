@@ -51,7 +51,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
   };
 
   return (
-    <header className="flex items-center justify-between h-14 px-6 border-b bg-card border-border sticky top-0 z-30">
+    <header className="flex items-center justify-between h-14 px-6 border-b bg-background border-border sticky top-0 z-30 shadow-sm">
       {/* Page Title & Mobile Toggle */}
       <div className="flex items-center gap-4">
         <button
@@ -60,10 +60,10 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
         >
           <Menu className="w-5 h-5" />
         </button>
-        <h1 className="font-semibold text-sm text-foreground md:text-base tracking-tight flex items-center gap-2">
+        <h1 className="font-bold text-sm text-foreground md:text-base tracking-tight flex items-center gap-2 uppercase">
           {getPageTitle()}
           {pathname === '/dashboard' && (
-            <span className="hidden md:inline-flex items-center gap-1 text-[9px] uppercase font-medium px-1.5 py-0.5 rounded border border-zinc-800 bg-zinc-900/60 text-zinc-400">
+            <span className="hidden md:inline-flex items-center gap-1 text-[9px] uppercase font-bold px-1.5 py-0.5 rounded border border-primary/20 bg-primary/10 text-primary">
               Live
             </span>
           )}
@@ -75,7 +75,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
         {/* Theme Switcher */}
         <button
           onClick={toggleTheme}
-          className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded border border-border"
+          className="p-1.5 text-muted-foreground hover:text-primary hover:bg-muted/80 rounded-lg border border-border transition-all"
           aria-label="Toggle Theme Mode"
         >
           {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -85,15 +85,15 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
         <div className="relative">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-2 p-1 rounded border border-border bg-card hover:bg-muted/30 transition-all text-xs font-medium"
+            className="flex items-center gap-2 p-1 pr-2 rounded-lg border border-border bg-muted/20 hover:bg-muted/40 transition-all text-xs font-semibold"
           >
             <img
               src={user?.profileImage ? resolveMediaUrl(user.profileImage) : DEFAULT_AVATAR}
               alt="Avatar"
-              className="w-6 h-6 rounded object-cover bg-muted"
+              className="w-6 h-6 rounded-md object-cover bg-muted"
               onError={(e) => { e.currentTarget.src = DEFAULT_AVATAR; }}
             />
-            <span className="hidden sm:inline text-muted-foreground">{user?.name}</span>
+            <span className="hidden sm:inline text-foreground">{user?.name}</span>
             <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
           </button>
 

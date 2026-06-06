@@ -25,25 +25,25 @@
   }
 
   .dark {
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 6%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 5%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 250 84% 63%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 16%;
-    --input: 240 3.7% 16%;
-    --ring: 250 84% 63%;
+    --background: 167 52% 8%;
+    --foreground: 164 30% 86%;
+    --card: 167 51% 12%;
+    --card-foreground: 164 30% 86%;
+    --popover: 167 52% 10%;
+    --popover-foreground: 164 30% 86%;
+    --primary: 48 77% 54%;
+    --primary-foreground: 167 52% 8%;
+    --secondary: 167 51% 15%;
+    --secondary-foreground: 164 30% 86%;
+    --muted: 167 46% 11%;
+    --muted-foreground: 164 15% 60%;
+    --accent: 163 71% 48%;
+    --accent-foreground: 167 52% 8%;
+    --destructive: 0 100% 65%;
+    --destructive-foreground: 164 30% 98%;
+    --border: 167 40% 18%;
+    --input: 167 40% 18%;
+    --ring: 48 77% 54%;
   }
 }
 
@@ -85,17 +85,99 @@
   }
 }
 
-* {
-  border-color: var(--color-border);
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--border)) transparent;
-}
+@layer base {
+  * {
+    border-color: var(--color-border);
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
 
-body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  transition: background-color 0.3s ease, color 0.3s ease;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Card styling from Stitch */
+  .card-premium {
+    @apply bg-card border border-border/50 rounded-xl overflow-hidden shadow-sm;
+  }
+
+  /* Button styling from Stitch */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-all active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-4 py-2 bg-secondary text-secondary-foreground font-semibold rounded-lg hover:bg-secondary/80 transition-all border border-border/50;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center justify-center px-4 py-2 bg-accent text-accent-foreground font-semibold rounded-lg hover:bg-accent/90 transition-all;
+  }
+
+  /* Badge styling from Stitch */
+  .badge-accent {
+    @apply px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-accent/20 text-accent border border-accent/30;
+  }
+
+  .badge-primary {
+    @apply px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/20 text-primary border border-primary/30;
+  }
+
+  /* Input styling from Stitch */
+  .input-premium {
+    @apply bg-muted/30 border border-border/50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all text-foreground placeholder:text-muted-foreground/50;
+  }
+
+  /* Enhanced Select/Dropdown styling */
+  .select-premium {
+    @apply bg-card border border-border/50 rounded-lg px-3 py-2 text-[10px] font-bold uppercase tracking-wider focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all text-foreground cursor-pointer appearance-none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23E4C12F' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem;
+  }
+
+  .select-premium option {
+    @apply bg-card text-foreground py-2;
+  }
+
+  /* Enhanced Pagination styling */
+  .pagination-container {
+    @apply flex items-center gap-2;
+  }
+
+  .pagination-btn {
+    @apply p-2 rounded-lg border border-border/50 bg-card text-muted-foreground transition-all hover:bg-muted hover:text-primary active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100 shadow-sm;
+  }
+
+  .pagination-btn-active {
+    @apply bg-primary text-primary-foreground border-primary shadow-md hover:bg-primary/90 hover:text-primary-foreground;
+  }
+
+  .pagination-info {
+    @apply text-[10px] font-bold text-muted-foreground uppercase tracking-widest;
+  }
+
+  .pagination-info span {
+    @apply text-foreground;
+  }
+
+  /* Table styling from Stitch */
+  .table-premium {
+    @apply w-full text-left text-sm border-separate border-spacing-0;
+  }
+
+  .table-premium th {
+    @apply bg-muted/30 py-3 px-4 text-muted-foreground font-medium border-b border-border/50 uppercase text-[10px] tracking-wider;
+  }
+
+  .table-premium td {
+    @apply py-3 px-4 border-b border-border/20 align-middle;
+  }
 }
 
 /* Clean flat panel style (no excessive glassmorphism or neon glows) */

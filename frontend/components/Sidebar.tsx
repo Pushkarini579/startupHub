@@ -63,17 +63,17 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Main Sidebar Shell */}
       <aside
         className={cn(
-          "fixed top-0 bottom-0 left-0 z-50 flex flex-col w-60 border-r bg-zinc-950 border-border transition-transform duration-300 lg:translate-x-0 lg:static lg:h-screen shrink-0",
+          "fixed top-0 bottom-0 left-0 z-50 flex flex-col w-60 border-r bg-background border-border transition-transform duration-300 lg:translate-x-0 lg:static lg:h-screen shrink-0",
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         {/* Header Branding */}
-        <div className="flex items-center justify-between h-14 px-6 border-b border-border">
+        <div className="flex items-center justify-between h-14 px-6 border-b border-border bg-background">
           <Link href="/dashboard" className="flex items-center gap-2.5" onClick={onClose}>
-            <div className="flex items-center justify-center w-6 h-6 rounded border border-zinc-800 bg-zinc-900 text-indigo-400">
+            <div className="flex items-center justify-center w-6 h-6 rounded border border-border bg-secondary text-primary">
               <Sparkles className="w-3.5 h-3.5" />
             </div>
-            <span className="font-semibold text-xs tracking-tight text-white uppercase">
+            <span className="font-bold text-xs tracking-widest text-white uppercase">
               StartupHub
             </span>
           </Link>
@@ -86,7 +86,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* User Quick Info */}
-        <div className="p-4 border-b border-border bg-zinc-950/20">
+        <div className="p-4 border-b border-border bg-muted/20">
           <div className="flex items-center gap-2.5">
             <img
               src={user?.profileImage ? resolveMediaUrl(user.profileImage) : DEFAULT_AVATAR}
@@ -95,11 +95,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               onError={(e) => { e.currentTarget.src = DEFAULT_AVATAR; }}
             />
             <div className="flex-1 overflow-hidden">
-              <h4 className="font-medium text-xs truncate text-foreground">{user?.name || 'Loading founder...'}</h4>
+              <h4 className="font-semibold text-xs truncate text-foreground uppercase tracking-tight">{user?.name || 'Loading founder...'}</h4>
               <span className="text-[10px] text-muted-foreground capitalize flex items-center gap-1 font-medium mt-0.5">
                 <span className={cn(
                   "w-1.5 h-1.5 rounded-full inline-block",
-                  user?.role === 'admin' ? "bg-indigo-500" : "bg-zinc-500"
+                  user?.role === 'admin' ? "bg-primary" : "bg-accent"
                 )} />
                 {user?.role} Account
               </span>
@@ -108,7 +108,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* Navigation list */}
-        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto bg-background">
           {links.map((link) => {
             const isActive = pathname === link.href;
             const Icon = link.icon;
@@ -118,15 +118,15 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 href={link.href}
                 onClick={onClose}
                 className={cn(
-                  "flex items-center gap-2.5 px-3 py-1.5 rounded text-xs font-medium transition-all group duration-150 border",
+                  "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all group duration-150 border",
                   isActive
-                    ? 'bg-zinc-900 border-zinc-800 text-white shadow-sm'
-                    : 'border-transparent text-muted-foreground hover:bg-zinc-900/30 hover:text-foreground'
+                    ? 'bg-secondary border-primary/20 text-primary shadow-sm'
+                    : 'border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                 )}
               >
                 <Icon className={cn(
                   "w-3.5 h-3.5 transition-transform duration-200 shrink-0",
-                  isActive ? 'text-white' : 'text-muted-foreground group-hover:text-foreground'
+                  isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
                 )} />
                 {link.name}
               </Link>
@@ -135,10 +135,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </nav>
 
         {/* Footer actions */}
-        <div className="p-3 border-t border-border bg-zinc-950/20">
+        <div className="p-3 border-t border-border bg-muted/20">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2.5 w-full px-3 py-2 rounded text-xs font-medium text-rose-400 hover:bg-rose-950/20 hover:text-rose-300 transition-colors shrink-0"
+            className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-xs font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0"
           >
             <LogOut className="w-3.5 h-3.5" />
             Sign Out

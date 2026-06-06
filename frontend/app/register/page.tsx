@@ -78,26 +78,26 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-center items-center px-6 py-12">
+    <div className="min-h-screen bg-background text-foreground flex flex-col justify-center items-center px-6 py-12">
       {/* Branding Logo */}
       <Link href="/" className="flex items-center gap-2.5 mb-6 select-none">
-        <div className="flex items-center justify-center w-7 h-7 rounded border border-zinc-800 bg-zinc-900 text-indigo-400">
+        <div className="flex items-center justify-center w-7 h-7 rounded border border-border bg-secondary text-primary">
           <Sparkles className="w-4 h-4" />
         </div>
-        <span className="font-semibold text-sm tracking-tight text-white">
+        <span className="font-bold text-sm tracking-widest text-white uppercase">
           StartupHub
         </span>
       </Link>
 
       {/* Main card */}
-      <div className="max-w-md w-full p-8 rounded-xl border border-zinc-800 bg-zinc-900/30 shadow-sm space-y-6">
+      <div className="max-w-md w-full p-8 rounded-2xl border border-border bg-card shadow-lg space-y-6">
         <div className="text-center">
-          <h2 className="text-xl font-semibold tracking-tight text-white">Create Account</h2>
-          <p className="text-xs text-zinc-500 mt-1.5">Register as a startup founder to launch your profile</p>
+          <h2 className="text-xl font-black tracking-tighter text-white uppercase">Create Account</h2>
+          <p className="text-[10px] text-muted-foreground mt-1.5 uppercase font-bold tracking-widest">Register as a startup founder</p>
         </div>
 
         {apiError && (
-          <div className="p-3 text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-lg">
+          <div className="p-3 text-[10px] bg-destructive/10 text-destructive border border-destructive/20 rounded-lg font-bold uppercase tracking-wider">
             {apiError}
           </div>
         )}
@@ -106,7 +106,7 @@ export default function RegisterPage() {
           {/* Avatar upload wrapper */}
           <div className="flex flex-col items-center gap-3">
             <div className="relative group cursor-pointer">
-              <div className="w-16 h-16 rounded-lg border border-zinc-800 bg-zinc-950 overflow-hidden flex items-center justify-center relative">
+              <div className="w-16 h-16 rounded-xl border border-border bg-muted/20 overflow-hidden flex items-center justify-center relative group-hover:border-primary/50 transition-all shadow-inner">
                 <img
                   src={previewUrl || DEFAULT_AVATAR}
                   alt="Preview"
@@ -126,80 +126,83 @@ export default function RegisterPage() {
                 className="absolute inset-0 opacity-0 cursor-pointer"
               />
             </div>
-            <span className="text-[10px] text-zinc-500 font-medium">Upload profile photo (optional)</span>
+            <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Identity Photo (Optional)</span>
           </div>
 
           {/* Name input */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Full Name</label>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Full Name</label>
             <input
               type="text"
               placeholder="Alex Carter"
               {...register('name')}
-              className="w-full px-3 py-2 rounded-lg border border-zinc-800 bg-zinc-950 focus:outline-none focus:border-zinc-700 text-xs placeholder:text-zinc-600 transition-colors text-white"
+              className="w-full px-3 py-2 rounded-lg border border-border bg-muted/20 focus:outline-none focus:border-primary/50 text-xs placeholder:text-muted-foreground/50 transition-all text-white font-medium"
             />
             {errors.name && (
-              <span className="text-[11px] text-rose-400 font-medium">{errors.name.message}</span>
+              <span className="text-[10px] text-destructive font-bold uppercase tracking-wider">{errors.name.message}</span>
             )}
           </div>
 
           {/* Email input */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Email Address</label>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Email Address</label>
             <input
               type="email"
               placeholder="name@company.com"
               {...register('email')}
-              className="w-full px-3 py-2 rounded-lg border border-zinc-800 bg-zinc-950 focus:outline-none focus:border-zinc-700 text-xs placeholder:text-zinc-600 transition-colors text-white"
+              className="w-full px-3 py-2 rounded-lg border border-border bg-muted/20 focus:outline-none focus:border-primary/50 text-xs placeholder:text-muted-foreground/50 transition-all text-white font-medium"
             />
             {errors.email && (
-              <span className="text-[11px] text-rose-400 font-medium">{errors.email.message}</span>
+              <span className="text-[10px] text-destructive font-bold uppercase tracking-wider">{errors.email.message}</span>
             )}
           </div>
 
           {/* Password input */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider">Password</label>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Secure Password</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 {...register('password')}
-                className="w-full pl-3 pr-10 py-2 rounded-lg border border-zinc-800 bg-zinc-950 focus:outline-none focus:border-zinc-700 text-xs placeholder:text-zinc-600 transition-colors text-white"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-muted/20 focus:outline-none focus:border-primary/50 text-xs placeholder:text-muted-foreground/50 transition-all text-white font-medium pr-10"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-zinc-600 hover:text-zinc-400 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
             {errors.password && (
-              <span className="text-[11px] text-rose-400 font-medium">{errors.password.message}</span>
+              <span className="text-[10px] text-destructive font-bold uppercase tracking-wider">{errors.password.message}</span>
             )}
           </div>
 
-          {/* Submit Action */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2 text-xs shadow-sm"
+            className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg font-black text-xs uppercase tracking-widest hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 shadow-sm active:scale-[0.98]"
           >
             {isSubmitting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Creating Profile...</span>
+              </>
             ) : (
               <>
-                Create Account <ArrowRight className="w-3.5 h-3.5" />
+                <span>Register Founder</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </>
             )}
           </button>
         </form>
 
-        <div className="text-center border-t border-zinc-800/60 pt-4">
-          <p className="text-xs text-zinc-500">
-            Already have an account?{' '}
-            <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+        <div className="text-center pt-2">
+          <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
+            Already registered?{' '}
+            <Link href="/login" className="text-primary hover:text-primary/80 transition-colors">
               Access Portal
             </Link>
           </p>

@@ -24,6 +24,9 @@ import {
   Loader2,
   Upload,
   User as UserIcon,
+  X,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { formatDate, cn, resolveMediaUrl } from '../../../lib/utils';
 
@@ -251,44 +254,39 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="space-y-5 animate-in fade-in duration-200">
-      {/* Header section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
+    <div className="space-y-6 animate-in fade-in duration-200">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-foreground tracking-tight">Projects & Tasks</h2>
-          <p className="text-xs text-muted-foreground">Plan, manage, and execute incubator milestones</p>
+          <h2 className="text-xl font-black text-foreground tracking-tighter uppercase">Project Pipeline</h2>
+          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mt-0.5">Manage tasks and venture milestones</p>
         </div>
         <button
           onClick={handleOpenCreateModal}
-          disabled={startupsList.length === 0}
-          className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg transition-colors text-xs shadow-sm shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-          title={startupsList.length === 0 ? "You must have at least one startup to create a project" : ""}
+          className="btn-primary gap-2 text-xs font-black uppercase tracking-widest h-10 shadow-md"
         >
-          <Plus className="w-4 h-4" /> Create Project
+          <Plus className="w-4 h-4" />
+          Initiate Project
         </button>
       </div>
 
-      {/* Filter and Search Panel */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 bg-card p-3 rounded-lg border border-border shadow-sm">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
+      {/* Filters Bar */}
+      <div className="p-4 border bg-card border-border/50 rounded-xl shadow-sm flex flex-col lg:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search tasks..."
+            placeholder="Search tasks by title or milestone..."
             value={searchInput}
             onChange={(e) => { setSearchInput(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-3 py-1.5 bg-muted/20 border border-border rounded-lg text-xs placeholder:text-muted-foreground/60 text-foreground focus:outline-none focus:border-zinc-700"
+            className="w-full pl-9 pr-4 py-2 bg-muted/20 border border-border/50 rounded-lg text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 transition-all font-medium"
           />
         </div>
-
-        {/* Status filter */}
-        <div className="relative">
-          <Filter className="absolute left-3 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
+        <div className="flex flex-wrap items-center gap-3">
           <select
             value={status}
             onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-3 py-1.5 bg-muted/20 border border-border rounded-lg text-xs text-muted-foreground focus:outline-none focus:border-zinc-700 appearance-none cursor-pointer"
+            className="select-premium min-w-[140px]"
           >
             <option value="">All Statuses</option>
             <option value="To Do">To Do</option>
@@ -296,32 +294,24 @@ export default function ProjectsPage() {
             <option value="Under Review">Under Review</option>
             <option value="Completed">Completed</option>
           </select>
-        </div>
 
-        {/* Priority filter */}
-        <div className="relative">
-          <Filter className="absolute left-3 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
           <select
             value={priority}
             onChange={(e) => { setPriority(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-3 py-1.5 bg-muted/20 border border-border rounded-lg text-xs text-muted-foreground focus:outline-none focus:border-zinc-700 appearance-none cursor-pointer"
+            className="select-premium min-w-[140px]"
           >
             <option value="">All Priorities</option>
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
           </select>
-        </div>
 
-        {/* Startup filter */}
-        <div className="relative">
-          <Filter className="absolute left-3 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
           <select
             value={startupId}
             onChange={(e) => { setStartupId(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-3 py-1.5 bg-muted/20 border border-border rounded-lg text-xs text-muted-foreground focus:outline-none focus:border-zinc-700 appearance-none cursor-pointer"
+            className="select-premium min-w-[160px]"
           >
-            <option value="">All Startups</option>
+            <option value="">All Ventures</option>
             {startupsList.map((s) => (
               <option key={s._id} value={s._id}>{s.startupName}</option>
             ))}
@@ -329,141 +319,117 @@ export default function ProjectsPage() {
         </div>
       </div>
 
-      {/* Task Rows Grid */}
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 text-indigo-500 animate-spin mb-2" />
-          <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Loading tasks...</span>
-        </div>
-      ) : !data || data.projects.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 bg-card border border-border border-dashed rounded-lg">
-          <FolderKanban className="w-10 h-10 text-muted-foreground/30 mb-3" />
-          <h3 className="font-semibold text-sm text-foreground mb-1">No Project Tasks</h3>
-          <p className="text-xs text-muted-foreground max-w-xs text-center leading-relaxed">
-            There are no projects or tasks active in this section. Register a startup first and create tasks.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            {data.projects.map((project) => (
-              <div
-                key={project._id}
-                className="flex flex-col justify-between border bg-card border-border rounded-lg shadow-sm hover:border-zinc-700/80 transition-colors p-5"
-              >
-                <div className="space-y-4">
-                  {/* Row header */}
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="text-[10px] font-bold text-primary uppercase tracking-wider">
-                      {typeof project.startupId === 'object' ? project.startupId.startupName : 'Startup'}
-                    </span>
-
-                    {/* Quick status toggle dropdown */}
-                    <div className="flex items-center gap-1.5">
-                      {getStatusIcon(project.status)}
-                      <select
-                        value={project.status}
-                        onChange={(e) => handleQuickStatusChange(project, e.target.value as any)}
-                        className="text-xs font-semibold text-muted-foreground bg-transparent border-none focus:outline-none cursor-pointer hover:text-foreground"
-                      >
-                        <option value="To Do">To Do</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Under Review">Under Review</option>
-                        <option value="Completed">Completed</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Title & Desc */}
-                  <div>
-                    <h4 className="font-bold text-base text-foreground leading-snug group-hover:text-primary transition-colors">
-                      {project.title}
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                      {project.description}
-                    </p>
-                  </div>
-
-                  {/* Metadata Row */}
-                  <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-border/40 text-[11px] text-muted-foreground">
-                    {/* Priority Badge */}
-                    <span className={cn(
-                      "text-[9px] uppercase font-extrabold border px-2 py-0.5 rounded-md tracking-wider shrink-0",
-                      getPriorityColor(project.priority)
-                    )}>
-                      {project.priority} Priority
-                    </span>
-
-                    {/* Deadline */}
-                    <span className="flex items-center gap-1 shrink-0 font-medium">
-                      <Calendar className="w-3.5 h-3.5" /> Due {formatDate(project.deadline)}
-                    </span>
-
-                    {/* Assignee */}
-                    <span className="flex items-center gap-1.5 shrink-0 truncate max-w-[150px] font-medium">
-                      <UserIcon className="w-3.5 h-3.5" />
-                      Assigned to {typeof project.assignedUser === 'object' ? project.assignedUser.name : 'User'}
-                    </span>
-
-                    {/* Document */}
-                    {project.attachment && (
-                      <a
-                        href={resolveMediaUrl(project.attachment)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-primary hover:underline font-bold shrink-0"
-                      >
-                        <Paperclip className="w-3.5 h-3.5" /> View Attachment
-                      </a>
-                    )}
-                  </div>
+      {/* Projects List Card View */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-48 bg-muted/20 border border-border/50 rounded-xl animate-pulse" />
+          ))
+        ) : data?.projects.length === 0 ? (
+          <div className="col-span-full py-20 text-center card-premium">
+            <FolderKanban className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" />
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">No projects matched your criteria</p>
+          </div>
+        ) : (
+          data?.projects.map((project) => (
+            <div key={project._id} className="card-premium p-5 flex flex-col justify-between hover:border-primary/30 transition-all group">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <span className={cn(
+                    "badge-accent",
+                    project.priority === 'High' && "bg-destructive/10 text-destructive border-destructive/20",
+                    project.priority === 'Medium' && "bg-primary/10 text-primary border-primary/20",
+                    project.priority === 'Low' && "bg-accent/10 text-accent border-accent/20"
+                  )}>
+                    {project.priority} Priority
+                  </span>
+                  <span className="text-[9px] font-black uppercase tracking-tighter text-muted-foreground">
+                    {typeof project.startupId === 'object' ? project.startupId.startupName : 'General'}
+                  </span>
+                </div>
+                
+                <div>
+                  <h4 className="font-bold text-sm text-foreground uppercase tracking-tight line-clamp-1 group-hover:text-primary transition-colors">{project.title}</h4>
+                  <p className="text-[11px] text-muted-foreground line-clamp-2 mt-1 font-medium">{project.description}</p>
                 </div>
 
-                {/* Edit Actions */}
-                <div className="flex items-center justify-end gap-2 pt-4 mt-4 border-t border-border/40 shrink-0">
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <span className={cn(
+                    "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border",
+                    project.status === 'Completed' ? "bg-accent/20 text-accent border-accent/30" : "bg-secondary text-muted-foreground border-border"
+                  )}>
+                    {project.status}
+                  </span>
+                  <div className="flex items-center gap-1 text-[9px] text-muted-foreground font-bold uppercase tracking-tighter">
+                    <Calendar className="w-3 h-3" />
+                    {formatDate(project.deadline)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-4 mt-4 border-t border-border/50">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-secondary border border-border flex items-center justify-center overflow-hidden">
+                    {typeof project.assignedUser === 'object' && project.assignedUser.profileImage ? (
+                      <img src={resolveMediaUrl(project.assignedUser.profileImage)} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <UserIcon className="w-3 h-3 text-muted-foreground" />
+                    )}
+                  </div>
+                  <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter">
+                    {typeof project.assignedUser === 'object' ? project.assignedUser.name : 'Unassigned'}
+                  </span>
+                </div>
+                
+                <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleOpenEditModal(project)}
-                    className="p-2 border border-border text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-xl transition-all"
-                    title="Edit Task Details"
+                    className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-all shadow-sm"
                   >
-                    <Edit2 className="w-4 h-4" />
+                    <Edit2 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => handleDeleteProject(project._id)}
-                    className="p-2 border border-border text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
-                    title="Delete Project Task"
+                    className="p-1.5 rounded-lg border border-border hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all shadow-sm"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Pagination */}
-          {data.pagination && data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-border pt-4 select-none">
-              <span className="text-xs text-muted-foreground">
-                Showing Page {data.pagination.page} of {data.pagination.totalPages} ({data.pagination.totalItems} tasks)
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  disabled={page === 1}
-                  onClick={() => setPage(page - 1)}
-                  className="px-3.5 py-1.5 border border-border rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
-                <button
-                  disabled={page === data.pagination.totalPages}
-                  onClick={() => setPage(page + 1)}
-                  className="px-3.5 py-1.5 border border-border rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
-              </div>
             </div>
-          )}
+          ))
+        )}
+      </div>
+
+      {/* Pagination Footer */}
+      {data?.pagination && data.pagination.totalPages > 1 && (
+        <div className="px-6 py-4 border border-border/50 rounded-xl flex items-center justify-between bg-muted/5 mt-6">
+          <p className="pagination-info">
+            Displaying Page <span>{data.pagination.page}</span> of <span>{data.pagination.totalPages}</span>
+          </p>
+          <div className="pagination-container">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+              className="pagination-btn"
+              title="Previous Page"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <div className="flex items-center gap-1">
+              <span className="pagination-btn pagination-btn-active w-8 h-8 flex items-center justify-center text-[10px] font-black">
+                {page}
+              </span>
+            </div>
+            <button
+              disabled={page >= data.pagination.totalPages}
+              onClick={() => setPage(page + 1)}
+              className="pagination-btn"
+              title="Next Page"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       )}
 

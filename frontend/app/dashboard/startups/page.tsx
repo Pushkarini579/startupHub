@@ -23,6 +23,8 @@ import {
   Upload,
   Calendar,
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { formatDate, cn, resolveMediaUrl, DEFAULT_LOGO } from '../../../lib/utils';
 
@@ -214,92 +216,85 @@ export default function StartupsPage() {
   };
 
   return (
-    <div className="space-y-5 animate-in fade-in duration-200">
-      {/* Header and triggers */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-4">
+    <div className="space-y-6 animate-in fade-in duration-200">
+      {/* Page Header & Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-foreground tracking-tight">Startup Registry</h2>
-          <p className="text-xs text-muted-foreground">Manage and track incubator portfolio organizations</p>
+          <h2 className="text-xl font-black text-foreground tracking-tighter uppercase">Venture Directory</h2>
+          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mt-0.5">Manage and track incubator startups</p>
         </div>
         {(user?.role === 'founder' || user?.role === 'admin') && (
           <button
             onClick={handleOpenCreateModal}
-            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg transition-colors text-xs shadow-sm shrink-0"
+            className="btn-primary gap-2 text-xs font-black uppercase tracking-widest h-10 shadow-md"
           >
-            <Plus className="w-4 h-4" /> {user?.role === 'admin' ? 'Create Startup' : 'Register Startup'}
+            <Plus className="w-4 h-4" />
+            {user?.role === 'admin' ? 'Create Venture' : 'Add Venture'}
           </button>
         )}
       </div>
 
       {/* Scope Toggles for Founders */}
       {user?.role === 'founder' && (
-        <div className="flex gap-1.5 p-1 bg-zinc-900/40 border border-border rounded-lg max-w-xs select-none">
+        <div className="flex items-center bg-muted/20 border border-border/50 rounded-lg p-1 max-w-xs">
           <button
             onClick={() => { setScope('my'); setPage(1); }}
             className={cn(
-              "flex-1 px-3 py-1.5 rounded text-xs font-medium transition-all",
-              scope === 'my' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+              "flex-1 px-3 py-1.5 rounded text-[9px] font-black uppercase tracking-widest transition-all",
+              scope === 'my' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             )}
           >
-            My Startups
+            My Portfolio
           </button>
           <button
             onClick={() => { setScope('all'); setPage(1); }}
             className={cn(
-              "flex-1 px-3 py-1.5 rounded text-xs font-medium transition-all",
-              scope === 'all' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+              "flex-1 px-3 py-1.5 rounded text-[9px] font-black uppercase tracking-widest transition-all",
+              scope === 'all' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             )}
           >
-            Browse Approved
+            Global Directory
           </button>
         </div>
       )}
 
-      {/* Filter and Search Panel */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 bg-card p-3 rounded-lg border border-border shadow-sm">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
+      {/* Filters Bar */}
+      <div className="p-4 border bg-card border-border/50 rounded-xl shadow-sm flex flex-col lg:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search startup name..."
+            placeholder="Search ventures by name or sector..."
             value={searchInput}
             onChange={(e) => { setSearchInput(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-3 py-1.5 bg-muted/20 border border-border rounded-lg text-xs placeholder:text-muted-foreground/60 text-foreground focus:outline-none focus:border-zinc-700"
+            className="w-full pl-9 pr-4 py-2 bg-muted/20 border border-border/50 rounded-lg text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 transition-all font-medium"
           />
         </div>
-
-        {/* Industry filter */}
-        <div className="relative">
-          <Filter className="absolute left-3 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
+        <div className="flex flex-wrap items-center gap-3">
           <select
             value={industry}
             onChange={(e) => { setIndustry(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-3 py-1.5 bg-muted/20 border border-border rounded-lg text-xs text-muted-foreground focus:outline-none focus:border-zinc-700 appearance-none cursor-pointer"
+            className="select-premium min-w-[140px]"
           >
-            <option value="">All Industries</option>
-            <option value="AI/ML">AI/ML</option>
+            <option value="">All Sectors</option>
+            <option value="SaaS">SaaS</option>
             <option value="Fintech">Fintech</option>
             <option value="Healthtech">Healthtech</option>
+            <option value="AI/ML">AI/ML</option>
             <option value="Clean Energy">Clean Energy</option>
             <option value="Cybersecurity">Cybersecurity</option>
-            <option value="SaaS">SaaS</option>
             <option value="Edtech">Edtech</option>
             <option value="Web3">Web3</option>
             <option value="AR/VR">AR/VR</option>
             <option value="Logistics">Logistics</option>
           </select>
-        </div>
 
-        {/* Funding Stage filter */}
-        <div className="relative">
-          <Filter className="absolute left-3 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
           <select
             value={fundingStage}
             onChange={(e) => { setFundingStage(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-3 py-1.5 bg-muted/20 border border-border rounded-lg text-xs text-muted-foreground focus:outline-none focus:border-zinc-700 appearance-none cursor-pointer"
+            className="select-premium min-w-[140px]"
           >
-            <option value="">All Funding Stages</option>
+            <option value="">All Stages</option>
             <option value="Ideation">Ideation</option>
             <option value="Pre-Seed">Pre-Seed</option>
             <option value="Seed">Seed</option>
@@ -308,206 +303,196 @@ export default function StartupsPage() {
             <option value="Series C">Series C</option>
             <option value="Bootstrapped">Bootstrapped</option>
           </select>
-        </div>
 
-        {/* Admin / founder status filter */}
-        {(user?.role === 'admin' || scope === 'my') && (
-        <div className="relative">
-          <Filter className="absolute left-3 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
-          <select
-            value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-3 py-1.5 bg-muted/20 border border-border rounded-lg text-xs text-muted-foreground focus:outline-none focus:border-zinc-700 appearance-none cursor-pointer"
-          >
-            <option value="">All Statuses</option>
-            <option value="Pending">Pending Approval</option>
-            <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
-          </select>
-        </div>
-        )}
-      </div>
-
-      {/* Grid List View */}
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 text-indigo-500 animate-spin mb-2" />
-          <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Syncing directories...</span>
-        </div>
-      ) : !data || data.startups.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 bg-card border border-border border-dashed rounded-lg">
-          <Building2 className="w-10 h-10 text-muted-foreground/30 mb-3" />
-          <h3 className="font-semibold text-sm text-foreground mb-1">No Startups Found</h3>
-          <p className="text-xs text-muted-foreground max-w-xs text-center leading-relaxed">
-            There are no startups matching your filter or scope requirements. Create one to get started.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {data.startups.map((startup) => (
-              <div
-                key={startup._id}
-                className="flex flex-col justify-between border bg-card border-border rounded-lg shadow-sm hover:border-zinc-700/80 transition-colors p-5"
+          {user?.role === 'admin' && (
+            <div className="flex items-center bg-muted/20 border border-border/50 rounded-lg p-1">
+              <button
+                onClick={() => { setScope('all'); setPage(1); }}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-[9px] font-black uppercase tracking-widest transition-all",
+                  scope === 'all' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground"
+                )}
               >
-                {/* Logo and info */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="w-10 h-10 rounded bg-muted/40 border border-border overflow-hidden flex items-center justify-center shrink-0">
-                      <img
-                        src={startup.logo ? resolveMediaUrl(startup.logo) : DEFAULT_LOGO}
-                        alt={startup.startupName}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = DEFAULT_LOGO;
-                        }}
-                      />
-                    </div>
-                    <span className={cn(
-                      "text-[10px] uppercase font-bold px-2.5 py-1 rounded-full border tracking-wide",
-                      getStatusBadge(startup.status)
-                    )}>
-                      {startup.status}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h4 className="font-bold text-base text-foreground line-clamp-1 leading-snug group-hover:text-primary transition-colors">
-                      {startup.startupName}
-                    </h4>
-                    <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1 font-semibold uppercase tracking-wider">
-                      <span>{startup.industry}</span>
-                      <span>•</span>
-                      <span>{startup.fundingStage}</span>
-                    </p>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
-                    {startup.description}
-                  </p>
-
-                  <div className="flex flex-col gap-2 pt-2 border-t border-border/40 text-[11px] text-muted-foreground">
-                    {startup.website && (
-                      <a
-                        href={startup.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 hover:text-foreground transition-colors truncate font-medium"
-                      >
-                        <Globe className="w-3.5 h-3.5 shrink-0" />
-                        {startup.website.replace(/^https?:\/\/(www\.)?/, '')}
-                      </a>
-                    )}
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5 shrink-0" />
-                      <span>Registered on {formatDate(startup.createdAt)}</span>
-                    </div>
-                    <div className="flex items-center gap-2 truncate">
-                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                      <span>Founder: {typeof startup.founderId === 'object' ? startup.founderId.name : 'Unknown'}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* CRUD Controls based on Roles */}
-                <div className="flex items-center justify-end gap-2 pt-4 mt-4 border-t border-border/40 shrink-0">
-                  {/* Founder actions for their own startups */}
-                  {user?.role === 'founder' && scope === 'my' && (
-                    <>
-                      <button
-                        onClick={() => handleOpenEditModal(startup)}
-                        className="p-2 border border-border text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-xl transition-all"
-                        title="Edit Startup Profile"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteStartup(startup._id)}
-                        className="p-2 border border-border text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
-                        title="Delete Startup Profile"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </>
-                  )}
-
-                  {/* Admin actions (Approve, Reject, Delete) */}
-                  {user?.role === 'admin' && (
-                    <>
-                      {startup.status !== 'Approved' && (
-                        <button
-                          onClick={() => handleApproveStatus(startup._id, 'Approved')}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/20 rounded-xl text-xs font-bold transition-all"
-                        >
-                          <Check className="w-3.5 h-3.5" /> Approve
-                        </button>
-                      )}
-                      {startup.status !== 'Rejected' && (
-                        <button
-                          onClick={() => handleApproveStatus(startup._id, 'Rejected')}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-xl text-xs font-bold transition-all"
-                        >
-                          <X className="w-3.5 h-3.5" /> Reject
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleDeleteStartup(startup._id)}
-                        className="p-2 border border-border text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
-                        title="Delete Startup Record"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Pagination Controls */}
-          {data.pagination && data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-border pt-4 select-none">
-              <span className="text-xs text-muted-foreground">
-                Showing Page {data.pagination.page} of {data.pagination.totalPages} ({data.pagination.totalItems} startups)
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  disabled={page === 1}
-                  onClick={() => setPage(page - 1)}
-                  className="px-3.5 py-1.5 border border-border rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
-                <button
-                  disabled={page === data.pagination.totalPages}
-                  onClick={() => setPage(page + 1)}
-                  className="px-3.5 py-1.5 border border-border rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
-              </div>
+                Global
+              </button>
+              <button
+                onClick={() => { setScope('my'); setPage(1); }}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-[9px] font-black uppercase tracking-widest transition-all",
+                  scope === 'my' ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Portfolio
+              </button>
             </div>
           )}
+
+          {(user?.role === 'admin' || scope === 'my') && (
+            <select
+              value={statusFilter}
+              onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
+              className="select-premium min-w-[140px]"
+            >
+              <option value="">All Statuses</option>
+              <option value="Pending">Pending Approval</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Main Table Content */}
+      <div className="card-premium">
+        <div className="overflow-x-auto">
+          <table className="table-premium">
+            <thead>
+              <tr>
+                <th>Venture Detail</th>
+                <th>Technology Sector</th>
+                <th>Funding Stage</th>
+                <th>Review Status</th>
+                <th>Activity Date</th>
+                <th className="text-right">Management</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td colSpan={6} className="py-8 px-4">
+                      <div className="h-4 bg-muted/40 rounded w-full"></div>
+                    </td>
+                  </tr>
+                ))
+              ) : data?.startups.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-20 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <Building2 className="w-10 h-10 text-muted-foreground/30" />
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">No ventures matched your criteria</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                data?.startups.map((startup) => (
+                  <tr key={startup._id} className="hover:bg-muted/10 transition-colors">
+                    <td>
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={startup.logo ? resolveMediaUrl(startup.logo) : DEFAULT_LOGO}
+                          alt={startup.startupName}
+                          className="w-9 h-9 rounded-lg border border-border bg-muted object-cover shadow-inner"
+                          onError={(e) => { e.currentTarget.src = DEFAULT_LOGO; }}
+                        />
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-xs text-foreground truncate uppercase tracking-tight">{startup.startupName}</h4>
+                          <a
+                            href={startup.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[9px] text-primary hover:underline flex items-center gap-1 font-bold uppercase tracking-tighter mt-0.5"
+                          >
+                            <Globe className="w-2.5 h-2.5" />
+                            Launch Site
+                          </a>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="badge-primary">{startup.industry}</span>
+                    </td>
+                    <td>
+                      <span className="text-[10px] font-bold text-foreground uppercase tracking-wider">{startup.fundingStage}</span>
+                    </td>
+                    <td>
+                      <span className={cn(
+                        "badge-accent",
+                        startup.status === 'Approved' && "bg-accent/20 text-accent border-accent/30",
+                        startup.status === 'Pending' && "bg-primary/20 text-primary border-primary/30",
+                        startup.status === 'Rejected' && "bg-destructive/20 text-destructive border-destructive/30"
+                      )}>
+                        {startup.status}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">
+                        {formatDate(startup.createdAt)}
+                      </span>
+                    </td>
+                    <td className="text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => handleOpenEditModal(startup)}
+                          className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-all shadow-sm"
+                          title="Modify Entry"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteStartup(startup._id)}
+                          className="p-1.5 rounded-lg border border-border hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all shadow-sm"
+                          title="Revoke Entry"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination Footer */}
+        <div className="px-6 py-4 border-t border-border/50 flex items-center justify-between bg-muted/5">
+          <p className="pagination-info">
+            Displaying <span>{(page - 1) * 10 + 1}-{Math.min(page * 10, data?.pagination?.totalItems || 0)}</span> of <span>{data?.pagination?.totalItems || 0}</span> Ventures
+          </p>
+          <div className="pagination-container">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+              className="pagination-btn"
+              title="Previous Page"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <div className="flex items-center gap-1">
+              <span className="pagination-btn pagination-btn-active w-8 h-8 flex items-center justify-center text-[10px] font-black">
+                {page}
+              </span>
+            </div>
+            <button
+              disabled={!data || page * 10 >= (data.pagination?.totalItems || 0)}
+              onClick={() => setPage(page + 1)}
+              className="pagination-btn"
+              title="Next Page"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* CRUD Overlay Form Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
           
-          <div className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 shadow-2xl relative z-10 max-h-[90vh] overflow-y-auto animate-in scale-in duration-200">
-            <h3 className="text-lg font-bold text-foreground mb-1">
-              {editingStartup ? 'Edit Startup Profile' : 'Register New Startup'}
+          <div className="bg-card border border-border/50 rounded-2xl max-w-lg w-full p-8 shadow-2xl relative z-10 max-h-[90vh] overflow-y-auto animate-in scale-in duration-200">
+            <h3 className="text-xl font-black text-foreground mb-1 uppercase tracking-tighter">
+              {editingStartup ? 'Modify Venture' : 'Register Venture'}
             </h3>
-            <p className="text-xs text-muted-foreground mb-6">
-              Enter organizational parameters below to build the portfolio profile.
+            <p className="text-[10px] text-muted-foreground mb-8 uppercase font-bold tracking-widest">
+              Enter organizational parameters below
             </p>
 
-            <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5">
               {/* Logo Select */}
               <div className="flex flex-col items-center gap-2 mb-4">
-                <div className="relative group cursor-pointer w-16 h-16 rounded-xl border border-border bg-muted overflow-hidden flex items-center justify-center">
+                <div className="relative group cursor-pointer w-20 h-20 rounded-2xl border-2 border-border bg-muted/20 overflow-hidden flex items-center justify-center shadow-inner group-hover:border-primary/50 transition-all">
                   <img
                     src={logoPreview || DEFAULT_LOGO}
                     alt="Logo"
@@ -516,38 +501,38 @@ export default function StartupsPage() {
                       e.currentTarget.src = DEFAULT_LOGO;
                     }}
                   />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                    <Upload className="w-4 h-4 text-white" />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                    <Upload className="w-5 h-5 text-white" />
                   </div>
                 </div>
                 <input type="file" accept="image/*" onChange={handleLogoChange} className="hidden" id="logo-uploader" />
-                <label htmlFor="logo-uploader" className="text-[10px] text-primary hover:underline font-bold cursor-pointer uppercase tracking-wider">
-                  Upload logo image
+                <label htmlFor="logo-uploader" className="text-[10px] text-primary hover:underline font-bold cursor-pointer uppercase tracking-widest">
+                  Identity Logo
                 </label>
               </div>
 
               {/* Startup Name */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">Startup Name</label>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Venture Name</label>
                 <input
                   type="text"
                   placeholder="e.g. Nexus AI"
                   {...register('startupName')}
-                  className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary text-foreground"
+                  className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 text-white font-medium transition-all"
                 />
                 {errors.startupName && (
-                  <span className="text-[11px] text-rose-400 font-medium">{errors.startupName.message}</span>
+                  <span className="text-[10px] text-destructive font-bold uppercase tracking-wider">{errors.startupName.message}</span>
                 )}
               </div>
 
               {/* Industry Select */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">Industry / Market Vertical</label>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Market Sector</label>
                 <select
                   {...register('industry')}
-                  className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary cursor-pointer"
+                  className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs text-foreground focus:outline-none focus:border-primary/50 cursor-pointer font-bold uppercase tracking-wider appearance-none"
                 >
-                  <option value="">Select industry vertical...</option>
+                  <option value="">Select Sector...</option>
                   <option value="AI/ML">AI/ML</option>
                   <option value="Fintech">Fintech</option>
                   <option value="Healthtech">Healthtech</option>
@@ -560,17 +545,17 @@ export default function StartupsPage() {
                   <option value="Logistics">Logistics</option>
                 </select>
                 {errors.industry && (
-                  <span className="text-[11px] text-rose-400 font-medium">{errors.industry.message}</span>
+                  <span className="text-[10px] text-destructive font-bold uppercase tracking-wider">{errors.industry.message}</span>
                 )}
               </div>
 
               {/* Funding Stage & Status Select */}
-              <div className="grid gap-4 grid-cols-2">
+              <div className="grid gap-5 grid-cols-2">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">Funding Stage</label>
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Venture Stage</label>
                   <select
                     {...register('fundingStage')}
-                    className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary cursor-pointer"
+                    className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs text-foreground focus:outline-none focus:border-primary/50 cursor-pointer font-bold uppercase tracking-wider appearance-none"
                   >
                     <option value="Ideation">Ideation</option>
                     <option value="Pre-Seed">Pre-Seed</option>
@@ -584,10 +569,10 @@ export default function StartupsPage() {
 
                 {user?.role === 'admin' && (
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">Approval Status</label>
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Review Status</label>
                   <select
                     {...register('status')}
-                    className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary cursor-pointer"
+                    className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs text-foreground focus:outline-none focus:border-primary/50 cursor-pointer font-bold uppercase tracking-wider appearance-none"
                   >
                     <option value="Pending">Pending</option>
                     <option value="Approved">Approved</option>
@@ -599,50 +584,50 @@ export default function StartupsPage() {
 
               {/* Website */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">Website URL</label>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Digital Presence (URL)</label>
                 <input
                   type="text"
                   placeholder="e.g. https://www.nexusai.io"
                   {...register('website')}
-                  className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary text-foreground"
+                  className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 text-white font-medium transition-all"
                 />
                 {errors.website && (
-                  <span className="text-[11px] text-rose-400 font-medium">{errors.website.message}</span>
+                  <span className="text-[10px] text-destructive font-bold uppercase tracking-wider">{errors.website.message}</span>
                 )}
               </div>
 
               {/* Description */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">Description Summary</label>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Venture Thesis</label>
                 <textarea
                   rows={4}
-                  placeholder="Outline the product vision, target market vertical, and milestones..."
+                  placeholder="Outline the product vision, target market, and milestones..."
                   {...register('description')}
-                  className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary text-foreground resize-none"
+                  className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 text-white font-medium resize-none transition-all"
                 />
                 {errors.description && (
-                  <span className="text-[11px] text-rose-400 font-medium">{errors.description.message}</span>
+                  <span className="text-[10px] text-destructive font-bold uppercase tracking-wider">{errors.description.message}</span>
                 )}
               </div>
 
               {/* Form buttons */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-border">
+              <div className="flex justify-end gap-3 pt-6 border-t border-border/50">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-border rounded-xl text-xs font-semibold text-muted-foreground hover:bg-muted/30 transition-colors"
+                  className="px-6 py-2.5 border border-border/50 rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-muted/30 transition-all active:scale-[0.98]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-xs transition-all disabled:opacity-50"
+                  className="btn-primary px-8 py-2.5 text-[10px] font-black uppercase tracking-widest shadow-md"
                 >
                   {actionLoading ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    'Save Details'
+                    'Commit Venture'
                   )}
                 </button>
               </div>

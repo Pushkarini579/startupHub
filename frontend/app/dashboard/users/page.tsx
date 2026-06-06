@@ -21,6 +21,8 @@ import {
   Loader2,
   Upload,
   User as UserIcon,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { formatDate, cn, resolveMediaUrl, DEFAULT_AVATAR } from '../../../lib/utils';
 
@@ -165,163 +167,157 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
-      {/* Header toolbars */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/60 pb-5">
+      {/* Header section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-foreground">User Directory</h2>
-          <p className="text-xs text-muted-foreground mt-1">Audit, register, and manage incubator member accounts</p>
+          <h2 className="text-xl font-black text-foreground tracking-tighter uppercase">Identity Management</h2>
+          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mt-0.5">Control platform access and organizational roles</p>
         </div>
         <button
           onClick={handleOpenCreateModal}
-          className="flex items-center gap-2 self-start sm:self-center bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-4 py-2.5 rounded-xl transition-all shadow-md shadow-primary/10 text-sm shrink-0"
+          className="btn-primary gap-2 text-xs font-black uppercase tracking-widest h-10 shadow-md"
         >
-          <Plus className="w-4.5 h-4.5" /> Create Account
+          <Plus className="w-4 h-4" />
+          Provision Account
         </button>
       </div>
 
-      {/* Filters */}
-      <div className="grid gap-4 sm:grid-cols-2 bg-card p-4 rounded-2xl border border-border shadow-sm">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3.5 top-3 w-4.5 h-4.5 text-muted-foreground" />
+      {/* Filters Bar */}
+      <div className="p-4 border bg-card border-border/50 rounded-xl shadow-sm flex flex-col lg:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search name or email address..."
+            placeholder="Search accounts by name or email identity..."
             value={searchInput}
             onChange={(e) => { setSearchInput(e.target.value); setPage(1); }}
-            className="w-full pl-10 pr-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs placeholder:text-muted-foreground/60 text-foreground focus:outline-none focus:border-primary/80"
+            className="w-full pl-9 pr-4 py-2 bg-muted/20 border border-border/50 rounded-lg text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 transition-all font-medium"
           />
         </div>
-
-        {/* Role select */}
         <div className="relative">
-          <Filter className="absolute left-3.5 top-3 w-4.5 h-4.5 text-muted-foreground" />
           <select
             value={role}
             onChange={(e) => { setRole(e.target.value); setPage(1); }}
-            className="w-full pl-10 pr-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs text-muted-foreground focus:outline-none focus:border-primary/80 appearance-none cursor-pointer"
+            className="select-premium min-w-[200px]"
           >
-            <option value="">All Account Roles</option>
-            <option value="admin">Administrators</option>
-            <option value="founder">Founders</option>
+            <option value="">All Access Levels</option>
+            <option value="admin">Platform Admin</option>
+            <option value="founder">Venture Founder</option>
           </select>
         </div>
       </div>
 
-      {/* Main Table view */}
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 text-primary animate-spin mb-2" />
-          <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Loading user files...</span>
-        </div>
-      ) : !data || data.users.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 bg-card border border-border border-dashed rounded-2xl">
-          <ShieldCheck className="w-12 h-12 text-muted-foreground/30 mb-4" />
-          <h3 className="font-bold text-base text-foreground mb-1">No Accounts Logged</h3>
-          <p className="text-xs text-muted-foreground max-w-xs text-center leading-relaxed">
-            There are no users registered matching this filter search. Add profiles to database.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          <div className="border border-border rounded-2xl overflow-hidden bg-card shadow-sm">
-            <div className="overflow-x-auto w-full">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-border bg-muted/20 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    <th className="p-4 pl-6">Profile Member</th>
-                    <th className="p-4">Contact Email</th>
-                    <th className="p-4">Account Role</th>
-                    <th className="p-4">Registration Date</th>
-                    <th className="p-4 text-right pr-6">Management</th>
+      {/* Users Data View */}
+      <div className="card-premium">
+        <div className="overflow-x-auto">
+          <table className="table-premium">
+            <thead>
+              <tr>
+                <th>Member Identity</th>
+                <th>Role Assignment</th>
+                <th>Registration Date</th>
+                <th className="text-right">Management</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td colSpan={4} className="py-8 px-4">
+                      <div className="h-4 bg-muted/40 rounded w-full"></div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-border/60">
-                  {data.users.map((u) => (
-                    <tr key={u.id} className="hover:bg-muted/10 text-xs text-muted-foreground font-medium transition-colors">
-                      {/* Member */}
-                      <td className="p-4 pl-6 text-foreground flex items-center gap-3">
+                ))
+              ) : !data || data.users.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="py-20 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <UserIcon className="w-10 h-10 text-muted-foreground/30" />
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">No member profiles discovered</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                data.users.map((u) => (
+                  <tr key={u.id} className="hover:bg-muted/10 transition-colors">
+                    <td>
+                      <div className="flex items-center gap-3">
                         <img
                           src={u.profileImage ? resolveMediaUrl(u.profileImage) : DEFAULT_AVATAR}
                           alt={u.name}
-                          className="w-8 h-8 rounded-lg object-cover bg-muted border border-border"
-                          onError={(e) => {
-                            e.currentTarget.src = DEFAULT_AVATAR;
-                          }}
+                          className="w-9 h-9 rounded-lg border border-border bg-muted object-cover shadow-inner"
+                          onError={(e) => { e.currentTarget.src = DEFAULT_AVATAR; }}
                         />
-                        <span className="font-bold text-sm truncate max-w-[150px]">{u.name}</span>
-                      </td>
-
-                      {/* Email */}
-                      <td className="p-4 truncate max-w-[200px]">
-                        <span className="flex items-center gap-1.5 hover:text-foreground transition-colors">
-                          <Mail className="w-3.5 h-3.5 text-muted-foreground" /> {u.email}
-                        </span>
-                      </td>
-
-                      {/* Role */}
-                      <td className="p-4">
-                        <span className={cn(
-                          "uppercase font-extrabold px-2 py-0.5 rounded-md border text-[9px] tracking-wider",
-                          u.role === 'admin'
-                            ? 'bg-violet-500/10 text-violet-400 border-violet-500/20'
-                            : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                        )}>
-                          {u.role}
-                        </span>
-                      </td>
-
-                      {/* Date */}
-                      <td className="p-4">
-                        <span className="flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5" /> {u.createdAt ? formatDate(u.createdAt) : 'N/A'}
-                        </span>
-                      </td>
-
-                      {/* Actions */}
-                      <td className="p-4 text-right pr-6">
-                        <button
-                          disabled={u.id === currentUser?.id}
-                          onClick={() => handleDeleteUser(u.id)}
-                          className="p-2 border border-border text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                          title="Delete User Account"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Pagination */}
-          {data.pagination && data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-border pt-4 select-none">
-              <span className="text-xs text-muted-foreground">
-                Showing Page {data.pagination.page} of {data.pagination.totalPages} ({data.pagination.totalItems} users)
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  disabled={page === 1}
-                  onClick={() => setPage(page - 1)}
-                  className="px-3.5 py-1.5 border border-border rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
-                <button
-                  disabled={page === data.pagination.totalPages}
-                  onClick={() => setPage(page + 1)}
-                  className="px-3.5 py-1.5 border border-border rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          )}
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-xs text-foreground truncate uppercase tracking-tight">{u.name}</h4>
+                          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium truncate">
+                            <Mail className="w-3 h-3" />
+                            {u.email}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={cn(
+                        "badge-accent",
+                        u.role === 'admin' ? "bg-primary/20 text-primary border-primary/30" : "bg-accent/20 text-accent border-accent/30"
+                      )}>
+                        {u.role === 'admin' ? 'Administrative' : 'Founder'}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {u.createdAt ? formatDate(u.createdAt) : 'N/A'}
+                      </span>
+                    </td>
+                    <td className="text-right">
+                      <button
+                        onClick={() => handleDeleteUser(u.id)}
+                        disabled={u.id === currentUser?.id}
+                        className="p-1.5 rounded-lg border border-border hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all shadow-sm disabled:opacity-30 disabled:cursor-not-allowed"
+                        title={u.id === currentUser?.id ? "Cannot delete own session" : "Revoke Access"}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
+
+        {/* Pagination Footer */}
+        <div className="px-6 py-4 border-t border-border/50 flex items-center justify-between bg-muted/5">
+          <p className="pagination-info">
+            Displaying <span>{(page - 1) * 10 + 1}-{Math.min(page * 10, data?.pagination?.totalItems || 0)}</span> of <span>{data?.pagination?.totalItems || 0}</span> Members
+          </p>
+          <div className="pagination-container">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+              className="pagination-btn"
+              title="Previous Page"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <div className="flex items-center gap-1">
+              <span className="pagination-btn pagination-btn-active w-8 h-8 flex items-center justify-center text-[10px] font-black">
+                {page}
+              </span>
+            </div>
+            <button
+              disabled={!data || page >= (data.pagination?.totalPages || 1)}
+              onClick={() => setPage(page + 1)}
+              className="pagination-btn"
+              title="Next Page"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* CRUD Overlay Form Modal */}
       {isModalOpen && (

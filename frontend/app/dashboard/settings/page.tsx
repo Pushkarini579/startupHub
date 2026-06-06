@@ -15,6 +15,7 @@ import {
   Moon,
   Loader2,
   Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 import { cn, resolveMediaUrl, DEFAULT_AVATAR } from '../../../lib/utils';
 
@@ -90,23 +91,23 @@ export default function SettingsPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
       {/* Header */}
-      <div className="border-b border-border/60 pb-5">
-        <h2 className="text-xl font-bold text-foreground">Account Settings</h2>
-        <p className="text-xs text-muted-foreground mt-1">Configure profile details, credentials, and visual display modes</p>
+      <div className="border-b border-border/50 pb-5">
+        <h2 className="text-xl font-black text-foreground tracking-tighter uppercase">Account Parameters</h2>
+        <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-widest">Configure profile identity and visual display</p>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Left: Forms Profile Settings */}
-        <div className="lg:col-span-2 bg-card border border-border p-6 rounded-2xl shadow-sm space-y-6">
+        <div className="lg:col-span-2 bg-card border border-border/50 p-8 rounded-2xl shadow-sm space-y-8">
           <div>
-            <h3 className="font-bold text-sm text-foreground">Profile Parameters</h3>
-            <p className="text-xs text-muted-foreground mt-1">Update personal metadata and dashboard details</p>
+            <h3 className="font-black text-xs text-foreground uppercase tracking-wider">Profile Metadata</h3>
+            <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-widest">Update personal information</p>
           </div>
 
-          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
             {/* Avatar upload */}
-            <div className="flex items-center gap-4 p-4 border border-border/50 bg-muted/10 rounded-xl">
-              <div className="relative group cursor-pointer w-16 h-16 rounded-xl border border-border bg-muted overflow-hidden flex items-center justify-center shrink-0">
+            <div className="flex items-center gap-6 p-5 border border-border/50 bg-muted/20 rounded-2xl shadow-inner">
+              <div className="relative group cursor-pointer w-20 h-20 rounded-2xl border-2 border-border bg-muted overflow-hidden flex items-center justify-center shrink-0 shadow-sm group-hover:border-primary/50 transition-all">
                 <img
                   src={photoPreview || DEFAULT_AVATAR}
                   alt="Preview"
@@ -115,138 +116,155 @@ export default function SettingsPage() {
                     e.currentTarget.src = DEFAULT_AVATAR;
                   }}
                 />
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                  <Upload className="w-4 h-4 text-white" />
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                  <Upload className="w-5 h-5 text-white" />
                 </div>
               </div>
-              <div>
+              <div className="space-y-2">
                 <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" id="photo-setting-uploader" />
                 <label
                   htmlFor="photo-setting-uploader"
-                  className="px-3.5 py-1.5 border border-border hover:bg-muted/40 text-xs text-muted-foreground font-bold rounded-lg cursor-pointer flex items-center gap-1.5 hover:text-foreground transition-all uppercase tracking-wider"
+                  className="px-4 py-2 border border-border/50 hover:bg-muted/40 text-[10px] text-muted-foreground font-black rounded-xl cursor-pointer flex items-center gap-2 hover:text-primary transition-all uppercase tracking-widest bg-card shadow-sm active:scale-[0.98]"
                 >
-                  <Upload className="w-3.5 h-3.5" /> Upload Photo
+                  <Upload className="w-4 h-4" /> Identity Photo
                 </label>
-                <p className="text-[10px] text-muted-foreground/80 mt-1.5">JPG, PNG or WEBP. Max 4MB size.</p>
+                <p className="text-[9px] text-muted-foreground/60 uppercase font-bold tracking-tighter">JPG, PNG or WEBP. Max 4MB size.</p>
               </div>
             </div>
 
             {/* Name */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                <UserIcon className="w-4 h-4 text-muted-foreground" /> Full Name
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                <UserIcon className="w-3.5 h-3.5 text-primary" /> Full Name
               </label>
               <input
                 type="text"
                 placeholder="Alex Carter"
                 {...register('name')}
-                className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary text-foreground"
+                className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 text-white font-medium transition-all"
               />
               {errors.name && (
-                <span className="text-[11px] text-rose-400 font-medium">{errors.name.message}</span>
+                <span className="text-[10px] text-destructive font-bold uppercase tracking-wider">{errors.name.message}</span>
               )}
             </div>
 
             {/* Email */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                <Mail className="w-4 h-4 text-muted-foreground" /> Email Address
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                <Mail className="w-3.5 h-3.5 text-primary" /> Primary Email
               </label>
               <input
                 type="email"
-                placeholder="founder@example.com"
+                placeholder="alex@ventures.com"
                 {...register('email')}
-                className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary text-foreground"
+                className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 text-white font-medium transition-all"
               />
               {errors.email && (
-                <span className="text-[11px] text-rose-400 font-medium">{errors.email.message}</span>
+                <span className="text-[10px] text-destructive font-bold uppercase tracking-wider">{errors.email.message}</span>
               )}
             </div>
 
             {/* Password */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                <Lock className="w-4 h-4 text-muted-foreground" /> Update Password (Leave blank to keep current)
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                <Lock className="w-3.5 h-3.5 text-primary" /> Update Credentials
               </label>
               <input
                 type="password"
-                placeholder="••••••••"
+                placeholder="Leave blank to maintain current"
                 {...register('password')}
-                className="w-full px-4 py-2.5 bg-muted/20 border border-border rounded-xl text-xs placeholder:text-zinc-500 focus:outline-none focus:border-primary text-foreground"
+                className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 text-white font-medium transition-all"
               />
               {errors.password && (
-                <span className="text-[11px] text-rose-400 font-medium">{errors.password.message}</span>
+                <span className="text-[10px] text-destructive font-bold uppercase tracking-wider">{errors.password.message}</span>
               )}
             </div>
 
-            {/* Form actions */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-border">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex items-center gap-1.5 px-5 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-xs transition-all disabled:opacity-50"
+            {/* Role Display (ReadOnly) */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                <ShieldCheck className="w-3.5 h-3.5 text-primary" /> Access Level
+              </label>
+              <select
+                disabled
+                className="select-premium w-full opacity-70 cursor-not-allowed"
+                value={user?.role}
               >
-                {submitting ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  'Save Profile Details'
-                )}
-              </button>
+                <option value="admin">Platform Administrator</option>
+                <option value="founder">Venture Founder</option>
+              </select>
             </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="btn-primary w-full py-3.5 text-[10px] font-black uppercase tracking-widest shadow-md active:scale-[0.98]"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Updating Profile...
+                </>
+              ) : (
+                'Commit Profile Changes'
+              )}
+            </button>
           </form>
         </div>
 
-        {/* Right: Theme selections */}
-        <div className="bg-card border border-border p-6 rounded-2xl shadow-sm space-y-6">
-          <div>
-            <h3 className="font-bold text-sm text-foreground">Visual Theme Mode</h3>
-            <p className="text-xs text-muted-foreground mt-1">Set the preferred display color theme</p>
+        {/* Right: Preferences and display */}
+        <div className="space-y-8">
+          {/* Visual Mode Preferences */}
+          <div className="bg-card border border-border/50 p-6 rounded-2xl shadow-sm space-y-6">
+            <div>
+              <h3 className="font-black text-xs text-foreground uppercase tracking-wider">Visual Display</h3>
+              <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-widest">Select interface mode</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => handleThemeSelect('light')}
+                className={cn(
+                  "flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all group",
+                  theme === 'light' ? "border-primary bg-primary/5" : "border-border/50 bg-muted/10 hover:border-primary/30"
+                )}
+              >
+                <div className={cn(
+                  "w-10 h-10 rounded-lg flex items-center justify-center transition-colors",
+                  theme === 'light' ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:text-primary"
+                )}>
+                  <Sun className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest">Luminous</span>
+              </button>
+
+              <button
+                onClick={() => handleThemeSelect('dark')}
+                className={cn(
+                  "flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all group",
+                  theme === 'dark' ? "border-primary bg-primary/5" : "border-border/50 bg-muted/10 hover:border-primary/30"
+                )}
+              >
+                <div className={cn(
+                  "w-10 h-10 rounded-lg flex items-center justify-center transition-colors",
+                  theme === 'dark' ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:text-primary"
+                )}>
+                  <Moon className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest">Obsidian</span>
+              </button>
+            </div>
           </div>
 
-          <div className="grid gap-4 select-none">
-            {/* Dark Mode toggle */}
-            <button
-              onClick={() => handleThemeSelect('dark')}
-              className={cn(
-                "flex items-center justify-between p-4 border rounded-2xl text-left transition-all",
-                theme === 'dark'
-                  ? 'border-primary bg-primary/5 text-foreground shadow-sm shadow-primary/5'
-                  : 'border-border text-muted-foreground hover:bg-muted/10 hover:text-foreground'
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl border border-border/80 bg-muted/20 text-indigo-400">
-                  <Moon className="w-4.5 h-4.5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-xs">Sleek Dark Theme</h4>
-                  <p className="text-[10px] text-muted-foreground/80 mt-0.5">High-contrast, easy-on-the-eyes layout</p>
-                </div>
-              </div>
-              {theme === 'dark' && <Sparkles className="w-4 h-4 text-primary shrink-0" />}
-            </button>
-
-            {/* Light Mode toggle */}
-            <button
-              onClick={() => handleThemeSelect('light')}
-              className={cn(
-                "flex items-center justify-between p-4 border rounded-2xl text-left transition-all",
-                theme === 'light'
-                  ? 'border-primary bg-primary/5 text-foreground shadow-sm shadow-primary/5'
-                  : 'border-border text-muted-foreground hover:bg-muted/10 hover:text-foreground'
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl border border-border/80 bg-muted/20 text-amber-500">
-                  <Sun className="w-4.5 h-4.5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-xs">Clean Light Theme</h4>
-                  <p className="text-[10px] text-muted-foreground/80 mt-0.5">Classic high-visibility daytime styling</p>
-                </div>
-              </div>
-              {theme === 'light' && <Sparkles className="w-4 h-4 text-primary shrink-0" />}
-            </button>
+          {/* Quick Support / Info */}
+          <div className="bg-primary/10 border border-primary/20 p-6 rounded-2xl shadow-sm relative overflow-hidden group">
+            <Sparkles className="absolute -right-4 -top-4 w-24 h-24 text-primary/5 group-hover:rotate-12 transition-transform duration-500" />
+            <div className="relative z-10">
+              <h3 className="font-black text-xs text-primary uppercase tracking-wider">Venture Intelligence</h3>
+              <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed font-medium">
+                Your profile data is encrypted and managed according to incubator security protocols.
+              </p>
+            </div>
           </div>
         </div>
       </div>
