@@ -1,4 +1,14 @@
 # StartupHub – Startup Incubation & Management Platform
+## Live Demo
+
+### Application Links
+
+**Frontend (Vercel):**
+`https://startup-hub-eight.vercel.app`
+
+**Backend API (Railway):**
+`https://startuphub-production.up.railway.app`
+
 
 StartupHub is a comprehensive dashboard designed to streamline the management of startup ecosystems. It provides a centralized platform for founders to manage their projects and for administrators to oversee the incubation process, including mentor assignments and analytics.
 
@@ -139,7 +149,7 @@ CLOUDINARY_API_SECRET=your_api_secret
    ```
 
 3. **Seed the Database (Optional)**:
-   The application is configured to **auto-seed** the database with demo data if it's empty on startup. However, you can manually seed it at any time:
+   The application is configured to **auto-seed** the **Admin demo account** and associated demonstration data if they are missing. This ensures the recruiter experience is always ready. Newly registered users will always start with a clean workspace. You can also manually seed the database:
    ```bash
    cd backend
    npm run seed
@@ -153,40 +163,22 @@ The project is configured for a professional deployment workflow:
 * **Database**: Uses **MongoDB Atlas** for a scalable, managed database instance.
 * **Storage**: **Cloudinary** handles all persistent file storage, ensuring images remain available across deployments.
 
-## Demo Credentials
+### Demo Credentials
 
-**Admin Account**:
+**Admin Account**
+
 * Email: admin@startuphub.com
 * Password: password123
 
-**Note**:
-The platform includes seeded demonstration data for evaluation purposes. Newly registered users start with a clean workspace and can create their own startups and projects.
+### Notes for Reviewers
 
-## Screenshots
+* The platform includes seeded demonstration data for evaluation purposes.
+* New users can register their own accounts and will start with a clean workspace.
+* The admin account provides access to a fully populated dashboard showcasing analytics, startups, projects, mentors, search, filtering, pagination, file uploads, and role-based access control features.
 
-*(Placeholders for project screenshots)*
 
-### Login Page
-![Login Page Placeholder]
 
-### Dashboard Analytics
-![Dashboard Placeholder]
-
-### Startup Management
-![Startups Placeholder]
-
-### Project Tracking
-![Projects Placeholder]
-
-### Mobile View
-![Mobile View Placeholder]
-
-## Challenges Faced
-
-* **Authentication & RBAC**: Setting up secure JWT-based authentication and ensuring that routes were correctly protected based on user roles was a significant learning curve.
-* **CORS Configuration**: Managing Cross-Origin Resource Sharing between the Vercel frontend and Railway backend required careful configuration of environment variables and middleware.
-* **File Upload Handling**: Transitioning from local file storage to a cloud-based solution (Cloudinary) taught me how to handle asynchronous uploads and manage fallbacks for local development.
-* **Deployment Sync**: Coordinating the deployment of two separate services while ensuring they could communicate securely was a challenging but rewarding process.
+.
 
 ## Future Improvements
 
@@ -204,5 +196,5 @@ Key takeaways:
 * **DevOps Basics**: Gaining hands-on experience with deployment platforms like Vercel and Railway, and understanding how to manage production-ready environment variables.
 
 ---
-**Author**: [Your Name]
+**Author**: Pushkarini
 **License**: MIT
