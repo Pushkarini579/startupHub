@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import multer from 'multer';
 import { connectDB } from './config/db';
+import { autoSeed } from './utils/autoSeed';
 
 // Routes
 import authRoutes from './routes/authRoutes';
@@ -22,7 +23,9 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Connect Database
-connectDB();
+connectDB().then(() => {
+  autoSeed();
+});
 
 // CORS Configuration
 const defaultOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
