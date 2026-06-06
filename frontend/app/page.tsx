@@ -3,6 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { Sparkles, Building2, FolderKanban, Users2, ShieldCheck, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 export default function LandingPage() {
   return (
@@ -25,12 +27,11 @@ export default function LandingPage() {
             >
               Sign In
             </Link>
-            <Link
-              href="/register"
-              className="btn-primary gap-2 text-[10px] font-black uppercase tracking-widest px-5 h-9 shadow-md"
-            >
-              Get Started <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            <Button asChild variant="premium" size="sm" className="px-5 h-9">
+              <Link href="/register" className="gap-2">
+                Get Started <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </Button>
           </div>
         </div>
       </header>
@@ -51,62 +52,64 @@ export default function LandingPage() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md mb-32">
-          <Link
-            href="/register"
-            className="btn-primary w-full sm:w-auto px-8 py-3.5 text-[10px] font-black uppercase tracking-widest shadow-lg active:scale-[0.98]"
-          >
-            Create Founder Account
-          </Link>
-          <Link
-            href="/login"
-            className="btn-secondary w-full sm:w-auto px-8 py-3.5 text-[10px] font-black uppercase tracking-widest shadow-md active:scale-[0.98]"
-          >
-            Access Dashboard
-          </Link>
+          <Button asChild variant="premium" className="w-full sm:w-auto px-8 py-3.5">
+            <Link href="/register">Create Founder Account</Link>
+          </Button>
+          <Button asChild variant="secondary" className="w-full sm:w-auto px-8 py-3.5 text-[10px] font-black uppercase tracking-widest border border-border/50">
+            <Link href="/login">Access Dashboard</Link>
+          </Button>
         </div>
 
         {/* Feature Section Grid */}
         <div className="w-full border-t border-border/30 pt-20">
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 text-left">
-            <div className="space-y-4 p-6 border border-border/30 rounded-2xl hover:border-primary/20 hover:bg-muted/30 transition-all group shadow-sm">
-              <div className="w-10 h-10 rounded-xl border border-border bg-secondary text-primary flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                <Building2 className="w-5 h-5" />
-              </div>
-              <h3 className="font-black text-xs text-foreground uppercase tracking-wider">Startup Profiles</h3>
-              <p className="text-[11px] leading-relaxed text-muted-foreground font-medium uppercase tracking-tight">
-                Register company summaries, capitalization stages, URLs, and track approval pipelines with simple status changes.
-              </p>
-            </div>
+            <Card className="border-border/30 hover:border-primary/20 hover:bg-muted/30 transition-all group shadow-sm bg-transparent">
+              <CardHeader className="space-y-4 p-6">
+                <div className="w-10 h-10 rounded-xl border border-border bg-secondary text-primary flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <CardTitle className="text-xs">Startup Profiles</CardTitle>
+                <CardDescription className="text-[11px] leading-relaxed lowercase font-medium tracking-tight normal-case">
+                  Register company summaries, capitalization stages, URLs, and track approval pipelines with simple status changes.
+                </CardDescription>
+              </CardHeader>
+            </Card>
 
-            <div className="space-y-4 p-6 border border-border/30 rounded-2xl hover:border-accent/20 hover:bg-muted/30 transition-all group shadow-sm">
-              <div className="w-10 h-10 rounded-xl border border-border bg-secondary text-accent flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                <FolderKanban className="w-5 h-5" />
-              </div>
-              <h3 className="font-black text-xs text-foreground uppercase tracking-wider">Milestone Boards</h3>
-              <p className="text-[11px] leading-relaxed text-muted-foreground font-medium uppercase tracking-tight">
-                Track deliverable tasks, manage deadlines, assign stakeholders, and attach pitch decks or audits.
-              </p>
-            </div>
+            <Card className="border-border/30 hover:border-accent/20 hover:bg-muted/30 transition-all group shadow-sm bg-transparent">
+              <CardHeader className="space-y-4 p-6">
+                <div className="w-10 h-10 rounded-xl border border-border bg-secondary text-accent flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                  <FolderKanban className="w-5 h-5" />
+                </div>
+                <CardTitle className="text-xs">Milestone Boards</CardTitle>
+                <CardDescription className="text-[11px] leading-relaxed lowercase font-medium tracking-tight normal-case">
+                  Track deliverable tasks, manage deadlines, assign stakeholders, and attach pitch decks or audits.
+                </CardDescription>
+              </CardHeader>
+            </Card>
 
-            <div className="space-y-4 p-6 border border-border/30 rounded-2xl hover:border-primary/20 hover:bg-muted/30 transition-all group shadow-sm">
-              <div className="w-10 h-10 rounded-xl border border-border bg-secondary text-primary flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                <Users2 className="w-5 h-5" />
-              </div>
-              <h3 className="font-black text-xs text-foreground uppercase tracking-wider">Mentor Alignment</h3>
-              <p className="text-[11px] leading-relaxed text-muted-foreground font-medium uppercase tracking-tight">
-                Coordinate with industry mentors and assign them to portfolio startups based on specialized expertise areas.
-              </p>
-            </div>
+            <Card className="border-border/30 hover:border-primary/20 hover:bg-muted/30 transition-all group shadow-sm bg-transparent">
+              <CardHeader className="space-y-4 p-6">
+                <div className="w-10 h-10 rounded-xl border border-border bg-secondary text-primary flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                  <Users2 className="w-5 h-5" />
+                </div>
+                <CardTitle className="text-xs">Mentor Alignment</CardTitle>
+                <CardDescription className="text-[11px] leading-relaxed lowercase font-medium tracking-tight normal-case">
+                  Coordinate with industry mentors and assign them to portfolio startups based on specialized expertise areas.
+                </CardDescription>
+              </CardHeader>
+            </Card>
 
-            <div className="space-y-4 p-6 border border-border/30 rounded-2xl hover:border-accent/20 hover:bg-muted/30 transition-all group shadow-sm">
-              <div className="w-10 h-10 rounded-xl border border-border bg-secondary text-accent flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h3 className="font-black text-xs text-foreground uppercase tracking-wider">Operator Controls</h3>
-              <p className="text-[11px] leading-relaxed text-muted-foreground font-medium uppercase tracking-tight">
-                Global administrator controls to oversee portfolio health metrics, resolve startup approvals, and allocate mentors.
-              </p>
-            </div>
+            <Card className="border-border/30 hover:border-accent/20 hover:bg-muted/30 transition-all group shadow-sm bg-transparent">
+              <CardHeader className="space-y-4 p-6">
+                <div className="w-10 h-10 rounded-xl border border-border bg-secondary text-accent flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <CardTitle className="text-xs">Operator Controls</CardTitle>
+                <CardDescription className="text-[11px] leading-relaxed lowercase font-medium tracking-tight normal-case">
+                  Global administrator controls to oversee portfolio health metrics, resolve startup approvals, and allocate mentors.
+                </CardDescription>
+              </CardHeader>
+            </Card>
           </div>
         </div>
       </main>

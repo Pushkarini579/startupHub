@@ -9,6 +9,7 @@ import { Startup } from '../../../types';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../hooks/useToast';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
+import { Input } from '@/components/ui/input';
 import {
   Building2,
   Search,
@@ -262,12 +263,12 @@ export default function StartupsPage() {
       <div className="p-4 border bg-card border-border/50 rounded-xl shadow-sm flex flex-col lg:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
+          <Input
             type="text"
             placeholder="Search ventures by name or sector..."
             value={searchInput}
             onChange={(e) => { setSearchInput(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-4 py-2 bg-muted/20 border border-border/50 rounded-lg text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 transition-all font-medium"
+            className="pl-9"
           />
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -509,11 +510,10 @@ export default function StartupsPage() {
               {/* Startup Name */}
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Venture Name</label>
-                <input
+                <Input
                   type="text"
                   placeholder="e.g. Nexus AI"
                   {...register('startupName')}
-                  className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 text-white font-medium transition-all"
                 />
                 {errors.startupName && (
                   <span className="text-[10px] text-destructive font-bold uppercase tracking-wider">{errors.startupName.message}</span>
@@ -580,11 +580,10 @@ export default function StartupsPage() {
               {/* Website */}
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Digital Presence (URL)</label>
-                <input
+                <Input
                   type="text"
                   placeholder="e.g. https://www.nexusai.io"
                   {...register('website')}
-                  className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 text-white font-medium transition-all"
                 />
                 {errors.website && (
                   <span className="text-[10px] text-destructive font-bold uppercase tracking-wider">{errors.website.message}</span>
