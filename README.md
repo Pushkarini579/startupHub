@@ -4,10 +4,10 @@
 ### Application Links
 
 **Frontend (Vercel):**
-`https://startup-hub-eight.vercel.app`
+https://startup-cnhlg8y3z-pushkarini-s-projects.vercel.app
 
 **Backend API (Railway):**
-`https://startuphub-production.up.railway.app`
+https://startuphub-production.up.railway.app
 
 
 StartupHub is a comprehensive dashboard designed to streamline the management of startup ecosystems. It provides a centralized platform for founders to manage their projects and for administrators to oversee the incubation process, including mentor assignments and analytics.
