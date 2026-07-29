@@ -7,9 +7,24 @@ import { uploadFile } from '../config/cloudinary';
 import { getJwtSecret } from '../utils/jwtSecret';
 import { formatUserResponse } from '../utils/formatUser';
 
-const generateToken = (id: string): string => {
+const generateAccessToken = (id: string): string => {
+  return jwt.sign({ id }, getJwtSecret(), {
+    expiresIn: '15m',
+  });
+};
+
+const generateRefreshToken = (id: string): string => {
   return jwt.sign({ id }, getJwtSecret(), {
     expiresIn: '30d',
+  });
+};
+
+const sendRefreshTokenCookie = (res: Response, token: string) => {
+  res.cookie('refreshToken', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
 };
 
@@ -48,7 +63,9 @@ export const register = async (req: AuthRequest, res: Response) => {
       profileImage: profileImageUrl,
     });
 
-    const token = generateToken(user._id.toString());
+    const token = generateAccessToken(user._id.toString());
+    const refreshToken = generateRefreshToken(user._id.toString());
+    sendRefreshTokenCookie(res, refreshToken);
 
     return res.status(201).json({
       token,
@@ -78,7 +95,9 @@ export const login = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = generateToken(user._id.toString());
+    const token = generateAccessToken(user._id.toString());
+    const refreshToken = generateRefreshToken(user._id.toString());
+    sendRefreshTokenCookie(res, refreshToken);
 
     return res.status(200).json({
       token,
@@ -150,3 +169,57 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ message: 'Server error updating profile' });
   }
 };
+
+export const refresh = async (req: AuthRequest, res: Response) => {
+  try {
+    const cookies = req.headers.cookie?.split(';').reduce((acc, c) => {
+      const [key, val] = c.trim().split('=');
+      if (key && val) acc[key] = val;
+      return acc;
+    }, {} as Record<string, string>) || {};
+    const refreshToken = cookies['refreshToken'];
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: 'No refresh token provided' });
+    }
+
+    let decoded: any;
+    try {
+      decoded = jwt.verify(refreshToken, getJwtSecret());
+    } catch (err) {
+      return res.status(401).json({ message: 'Invalid or expired refresh token' });
+    }
+
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+
+    const newAccessToken = generateAccessToken(user._id.toString());
+    const newRefreshToken = generateRefreshToken(user._id.toString());
+    sendRefreshTokenCookie(res, newRefreshToken);
+
+    return res.status(200).json({
+      token: newAccessToken,
+    });
+  } catch (error) {
+    console.error('Refresh Token Error:', error);
+    return res.status(500).json({ message: 'Server error during token refresh' });
+  }
+};
+
+export const logout = async (req: AuthRequest, res: Response) => {
+  try {
+    res.cookie('refreshToken', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      expires: new Date(0),
+    });
+    return res.status(200).json({ message: 'Logged out successfully' });
+  } catch (error) {
+    console.error('Logout Error:', error);
+    return res.status(500).json({ message: 'Server error during logout' });
+  }
+};
+

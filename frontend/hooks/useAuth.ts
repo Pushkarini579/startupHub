@@ -10,7 +10,7 @@ interface AuthState {
   theme: 'light' | 'dark';
   login: (credentials: any) => Promise<User>;
   registerFounder: (formData: FormData) => Promise<User>;
-  logout: () => void;
+  logout: () => Promise<void>;
   checkAuth: () => Promise<User | null>;
   setTheme: (theme: 'light' | 'dark') => void;
   updateUserProfile: (formData: FormData) => Promise<User>;
@@ -49,7 +49,12 @@ export const useAuth = create<AuthState>((set, get) => ({
     }
   },
 
-  logout: () => {
+  logout: async () => {
+    try {
+      await api.post('/auth/logout', {});
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
     localStorage.removeItem('startuphub_token');
     set({ user: null, token: null, error: null });
   },

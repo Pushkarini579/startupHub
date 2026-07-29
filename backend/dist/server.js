@@ -9,6 +9,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
 const multer_1 = __importDefault(require("multer"));
 const db_1 = require("./config/db");
+const autoSeed_1 = require("./utils/autoSeed");
 // Routes
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const startupRoutes_1 = __importDefault(require("./routes/startupRoutes"));
@@ -23,7 +24,9 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 5000;
 // Connect Database
-(0, db_1.connectDB)();
+(0, db_1.connectDB)().then(() => {
+    (0, autoSeed_1.autoSeed)();
+});
 // CORS Configuration
 const defaultOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
 const configuredOrigins = process.env.FRONTEND_URL

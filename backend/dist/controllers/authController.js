@@ -3,16 +3,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProfile = exports.getMe = exports.login = exports.register = void 0;
+exports.logout = exports.refresh = exports.updateProfile = exports.getMe = exports.login = exports.register = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const User_1 = require("../models/User");
 const cloudinary_1 = require("../config/cloudinary");
 const jwtSecret_1 = require("../utils/jwtSecret");
 const formatUser_1 = require("../utils/formatUser");
-const generateToken = (id) => {
+const generateAccessToken = (id) => {
+    return jsonwebtoken_1.default.sign({ id }, (0, jwtSecret_1.getJwtSecret)(), {
+        expiresIn: '15m',
+    });
+};
+const generateRefreshToken = (id) => {
     return jsonwebtoken_1.default.sign({ id }, (0, jwtSecret_1.getJwtSecret)(), {
         expiresIn: '30d',
+    });
+};
+const sendRefreshTokenCookie = (res, token) => {
+    res.cookie('refreshToken', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 };
 const register = async (req, res) => {
@@ -39,7 +52,9 @@ const register = async (req, res) => {
             role: 'founder',
             profileImage: profileImageUrl,
         });
-        const token = generateToken(user._id.toString());
+        const token = generateAccessToken(user._id.toString());
+        const refreshToken = generateRefreshToken(user._id.toString());
+        sendRefreshTokenCookie(res, refreshToken);
         return res.status(201).json({
             token,
             user: (0, formatUser_1.formatUserResponse)(user),
@@ -65,7 +80,9 @@ const login = async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
-        const token = generateToken(user._id.toString());
+        const token = generateAccessToken(user._id.toString());
+        const refreshToken = generateRefreshToken(user._id.toString());
+        sendRefreshTokenCookie(res, refreshToken);
         return res.status(200).json({
             token,
             user: (0, formatUser_1.formatUserResponse)(user),
@@ -130,3 +147,55 @@ const updateProfile = async (req, res) => {
     }
 };
 exports.updateProfile = updateProfile;
+const refresh = async (req, res) => {
+    try {
+        const cookies = req.headers.cookie?.split(';').reduce((acc, c) => {
+            const [key, val] = c.trim().split('=');
+            if (key && val)
+                acc[key] = val;
+            return acc;
+        }, {}) || {};
+        const refreshToken = cookies['refreshToken'];
+        if (!refreshToken) {
+            return res.status(401).json({ message: 'No refresh token provided' });
+        }
+        let decoded;
+        try {
+            decoded = jsonwebtoken_1.default.verify(refreshToken, (0, jwtSecret_1.getJwtSecret)());
+        }
+        catch (err) {
+            return res.status(401).json({ message: 'Invalid or expired refresh token' });
+        }
+        const user = await User_1.User.findById(decoded.id);
+        if (!user) {
+            return res.status(401).json({ message: 'User not found' });
+        }
+        const newAccessToken = generateAccessToken(user._id.toString());
+        const newRefreshToken = generateRefreshToken(user._id.toString());
+        sendRefreshTokenCookie(res, newRefreshToken);
+        return res.status(200).json({
+            token: newAccessToken,
+        });
+    }
+    catch (error) {
+        console.error('Refresh Token Error:', error);
+        return res.status(500).json({ message: 'Server error during token refresh' });
+    }
+};
+exports.refresh = refresh;
+const logout = async (req, res) => {
+    try {
+        res.cookie('refreshToken', '', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            expires: new Date(0),
+        });
+        return res.status(200).json({ message: 'Logged out successfully' });
+    }
+    catch (error) {
+        console.error('Logout Error:', error);
+        return res.status(500).json({ message: 'Server error during logout' });
+    }
+};
+exports.logout = logout;

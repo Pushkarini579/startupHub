@@ -10,6 +10,8 @@ const uploadMiddleware_1 = __importDefault(require("../middleware/uploadMiddlewa
 const router = (0, express_1.Router)();
 router.post('/register', uploadMiddleware_1.default.single('profileImage'), authController_1.register);
 router.post('/login', authController_1.login);
+router.post('/refresh', authController_1.refresh);
+router.post('/logout', authController_1.logout);
 router.get('/me', authMiddleware_1.default, authController_1.getMe);
 router.put('/profile', authMiddleware_1.default, uploadMiddleware_1.default.single('profileImage'), authController_1.updateProfile);
 exports.default = router;
